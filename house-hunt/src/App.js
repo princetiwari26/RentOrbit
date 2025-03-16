@@ -1,10 +1,18 @@
-import './App.css';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import TenantRegistration from "./pages/TenantRegistration";
+import LandlordRegistration from "./pages/LandlordRegistration";
 
 function App() {
   return (
-    <div className="App">
-      <h1 className='bg-blue-500 text-white px-4 py-2'>House Hunt</h1>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/tenant-registration" element={<TenantRegistration />} />
+        <Route path="/landlord-registration" element={<LandlordRegistration />} />
+      </Routes>
+    </Router>
   );
 }
 
