@@ -7,11 +7,11 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   const handleChoice = (userType) => {
-    setShowPopup(false); // Close the popup
+    setShowPopup(false);
     if (userType === "tenant") {
-      navigate("/tenant-registration"); // Navigate to Tenant Registration
+      navigate("/tenant");
     } else if (userType === "landlord") {
-      navigate("/landlord-registration"); // Navigate to Landlord Registration
+      navigate("/landlord");
     }
   };
 
