@@ -4,14 +4,50 @@ import { useNavigate } from "react-router-dom";
 const LandlordRegistration = () => {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    propertyLocation: "",
+    password: "",
+    confirmPassword: "",
+    loginEmail: "",
+    loginPassword: ""
+  });
 
-  const toggleForm = () => {
-    setIsLogin(!isLogin);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (isLogin) {
+      handleLogin();
+    } else {
+      handleRegister();
+    }
   };
 
   const handleLogin = () => {
     // Simulate login logic
+    localStorage.setItem("userType", "landlord");
+    localStorage.setItem("token", "dummy-token");
     navigate("/dashboard");
+  };
+
+  const handleRegister = () => {
+    // Simulate registration logic
+    localStorage.setItem("userType", "landlord");
+    localStorage.setItem("token", "dummy-token");
+    navigate("/dashboard");
+  };
+
+  const toggleForm = () => {
+    setIsLogin(!isLogin);
   };
 
   return (
@@ -20,83 +56,211 @@ const LandlordRegistration = () => {
         {/* Registration/Login Form */}
         <div className="bg-white p-8 rounded-2xl shadow-xl transition-all duration-500 ease-in-out">
           <h2 className="text-3xl font-bold text-gray-800 mb-6">
-            {isLogin ? "Login" : "Landlord Registration"}
+            {isLogin ? "Landlord Login" : "Landlord Registration"}
           </h2>
-          {isLogin ? (
-            <form className="space-y-5">
-              <input
-                type="email"
-                placeholder="Email Address"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400"
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400"
-              />
-              <button
-                onClick={handleLogin}
-                type="submit"
-                className="w-full bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors duration-300"
-              >
-                Login
-              </button>
-            </form>
-          ) : (
-            <form className="space-y-5">
-              <input
-                type="text"
-                placeholder="Full Name"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400"
-              />
-              <input
-                type="email"
-                placeholder="Email Address"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400"
-              />
-              <input
-                type="tel"
-                placeholder="Phone Number"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400"
-              />
-              <input
-                type="text"
-                placeholder="Property Location"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400"
-              />
-              <input
-                type="text"
-                placeholder="Password"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400"
-              />
-              <input
-                type="text"
-                placeholder="Confirm Password"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400"
-              />
-              <button
-                type="submit"
-                className="w-full bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors duration-300"
-              >
-                Register Now
-              </button>
-            </form>
-          )}
-          <button
-            onClick={() => navigate("/")}
-            className="w-full bg-gray-400 text-white px-6 py-3 rounded-lg mt-4 hover:bg-gray-500 transition-colors duration-300"
-          >
-            Go Back
-          </button>
-          <p className="text-center mt-4 text-gray-600">
+          
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {isLogin ? (
+              <>
+                <div>
+                  <label htmlFor="loginEmail" className="block text-sm font-medium text-gray-700 mb-1">
+                    Email Address <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    id="loginEmail"
+                    name="loginEmail"
+                    value={formData.loginEmail}
+                    onChange={handleChange}
+                    placeholder="your@email.com"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="loginPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                    Password <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    id="loginPassword"
+                    name="loginPassword"
+                    value={formData.loginPassword}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400"
+                    required
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="rememberMe"
+                      className="h-4 w-4 text-green-500 focus:ring-green-400 border-gray-300 rounded"
+                    />
+                    <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">
+                      Remember me
+                    </label>
+                  </div>
+                  <button
+                    type="button"
+                    className="text-sm text-green-500 hover:text-green-600 font-medium"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+                
+                <button
+                  type="submit"
+                  className="bg-gradient-to-r from-green-600 to-green-800 text-white font-semibold px-4 py-2 rounded-lg hover:from-green-800 hover:to-green-600 focus:outline-none"
+                >
+                  Sign In
+                </button>
+              </>
+            ) : (
+              <>
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                    Full Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="John Doe"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    Email Address <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="your@email.com"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                    Phone Number <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="+91 XXXXXXXXXX"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="propertyLocation" className="block text-sm font-medium text-gray-700 mb-1">
+                    Address <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    id="propertyLocation"
+                    name="propertyLocation"
+                    value={formData.propertyLocation}
+                    onChange={handleChange}
+                    placeholder="Address"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                    Password <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400"
+                    required
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    Password must be at least 8 characters long
+                  </p>
+                </div>
+                
+                <div>
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                    Confirm Password <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400"
+                    required
+                  />
+                </div>
+                
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="terms"
+                    className="h-4 w-4 text-green-500 focus:ring-green-400 border-gray-300 rounded"
+                    required
+                  />
+                  <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
+                    I agree to the <a href="#" className="text-green-500 hover:text-green-600">Terms of Service</a> and <a href="#" className="text-green-500 hover:text-green-600">Privacy Policy</a>
+                  </label>
+                </div>
+                
+                <button
+                  type="submit"
+                  className="bg-gradient-to-r from-green-600 to-green-800 text-white font-semibold px-4 py-2 rounded-lg hover:from-green-800 hover:to-green-600 focus:outline-none"
+                >
+                  Register
+                </button>
+              </>
+            )}
+          </form>
+          
+          
+          
+          <p className="text-center mt-3 text-gray-600">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button
               onClick={toggleForm}
-              className="text-blue-500 hover:text-blue-600 font-semibold focus:outline-none"
+              className="text-green-500 hover:text-green-600 font-semibold focus:outline-none hover:underline"
             >
-              {isLogin ? "Register" : "Login"}
+              {isLogin ? "Register here" : "Sign in"}
             </button>
           </p>
+          
+          <button
+            onClick={() => navigate("/")}
+            className="bg-gradient-to-r from-slate-600 to-slate-800 text-white font-semibold px-4 py-2 mt-2 rounded-lg hover:from-slate-800 hover:to-slate-600 focus:outline-none"
+          >
+            Back to Home
+          </button>
         </div>
 
         {/* Information Section */}
@@ -125,6 +289,10 @@ const LandlordRegistration = () => {
                 <h3 className="text-xl font-semibold text-gray-800">Secure Payments</h3>
                 <p className="text-gray-600">Enjoy hassle-free and secure payment processing.</p>
               </div>
+              <div className="bg-white p-4 rounded-lg shadow-md">
+                <h3 className="text-xl font-semibold text-gray-800">Detailed Analytics</h3>
+                <p className="text-gray-600">Get insights into your property performance.</p>
+              </div>
             </div>
           </div>
 
@@ -139,6 +307,10 @@ const LandlordRegistration = () => {
               <div className="bg-white p-4 rounded-lg shadow-md">
                 <p className="text-gray-600 italic">"The platform helped me grow my rental business significantly."</p>
                 <p className="text-gray-800 font-semibold mt-2">- Michael S.</p>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow-md">
+                <p className="text-gray-600 italic">"The analytics dashboard helped me optimize my rental prices perfectly."</p>
+                <p className="text-gray-800 font-semibold mt-2">- David K.</p>
               </div>
             </div>
           </div>

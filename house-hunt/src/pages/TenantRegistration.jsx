@@ -209,7 +209,7 @@ const TenantRegistration = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    placeholder="+1 (123) 456-7890"
+                    placeholder="+91 XXXXXXXXXX"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400"
                   />
                 </div>
@@ -272,11 +272,11 @@ const TenantRegistration = () => {
           </form>
           
           
-          <p className="text-center mt-6 text-gray-600">
+          <p className="text-center mt-3 text-gray-600">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button
               onClick={toggleForm}
-              className="text-blue-500 hover:text-blue-600 font-semibold focus:outline-none"
+              className="text-blue-500 hover:text-blue-600 font-semibold focus:outline-none hover:underline"
             >
               {isLogin ? "Register here" : "Sign in"}
             </button>
@@ -284,7 +284,7 @@ const TenantRegistration = () => {
           
           <button
             onClick={() => navigate("/")}
-            className="bg-gradient-to-r from-slate-600 to-slate-800 text-white font-semibold px-4 py-2 rounded-lg hover:from-slate-800 hover:to-slate-600 focus:outline-none"
+            className="bg-gradient-to-r from-slate-600 to-slate-800 text-white font-semibold px-4 py-2 mt-2 rounded-lg hover:from-slate-800 hover:to-slate-600 focus:outline-none"
           >
             Back to Home
           </button>
