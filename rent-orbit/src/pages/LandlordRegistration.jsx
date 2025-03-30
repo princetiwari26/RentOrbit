@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Eye, EyeOff } from 'lucide-react';
+import Notification from "../components/Notification";
 
 const LandlordRegistration = () => {
   const navigate = useNavigate();
@@ -10,10 +13,11 @@ const LandlordRegistration = () => {
     phone: "",
     address: "",
     password: "",
-    confirmPassword: "",
-    loginEmail: "",
-    loginPassword: ""
   });
+  const [notification, setNotification] = useState({message: '', type: ''});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errors, setErrors] = useState({password: '', confirmPassword: ''})
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,22 +36,46 @@ const LandlordRegistration = () => {
     }
   };
 
-  const handleLogin = () => {
-    // Simulate login logic
-    localStorage.setItem("userType", "landlord");
-    localStorage.setItem("token", "dummy-token");
-    navigate("/dashboard");
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post("http://localhost:8000/api/landlord/login", {
+        email: formData.email,
+        password: formData.password,
+      });
+      localStorage.setItem("token", response.data.token);
+      setNotification({ message: 'Login successful!', type: 'success' });
+      navigate("/dashboard");
+    } catch (error) {
+      setNotification({ message: 'Login failed.', type: 'error' });
+    }
   };
 
-  const handleRegister = () => {
-    // Simulate registration logic
-    localStorage.setItem("userType", "landlord");
-    localStorage.setItem("token", "dummy-token");
-    navigate("/dashboard");
+  const handleRegister =async () => {
+    try {
+      const newErrors = {};
+      if (formData.password.length < 8) {
+        newErrors.password = "Password must be at least 8 characters long";
+      }
+      if (formData.password !== formData.confirmPassword) {
+        newErrors.confirmPassword = "Passwords do not match";
+      }
+      if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
+        return;
+      }
+      await axios.post("http://localhost:8000/api/landlord/register", formData);
+      setNotification({ message: 'Registratin successfully! Please login.', type: 'success'});
+      setIsLogin(true);
+      setFormData({name: '', email: '', phone: '', address: '', password: '', confirmPassword: ''});
+      setErrors({});
+    } catch (error) {
+      setNotification({message: error.response?.data?.message || 'Registration failed', type: 'error'});
+    }
   };
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
+    setFormData({ name: '', email: '', phone: '', password: '' });
   };
 
   return (
@@ -63,14 +91,14 @@ const LandlordRegistration = () => {
             {isLogin ? (
               <>
                 <div>
-                  <label htmlFor="loginEmail" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                     Email Address <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
-                    id="loginEmail"
-                    name="loginEmail"
-                    value={formData.loginEmail}
+                    id="email"
+                    name="email"
+                    value={formData.email}
                     onChange={handleChange}
                     placeholder="your@email.com"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400"
@@ -79,14 +107,14 @@ const LandlordRegistration = () => {
                 </div>
                 
                 <div>
-                  <label htmlFor="loginPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                     Password <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="password"
-                    id="loginPassword"
-                    name="loginPassword"
-                    value={formData.loginPassword}
+                    id="password"
+                    name="password"
+                    value={formData.password}
                     onChange={handleChange}
                     placeholder="••••••••"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400"

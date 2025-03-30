@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import { Home, Bell, Settings, LogOut, User, Layers, ChevronLeft, ChevronRight } from "lucide-react";
+import { Home, Bell, Settings, LogOut, User, Layers, ChevronLeft, ChevronRight, PlusCircle } from "lucide-react";
 import TenantDashboard from "../components/TenantDashboard";
 import LandlordDashboard from "../components/LandlordDashboard";
 import TenantNotifications from "../components/TenantNotifications";
@@ -12,6 +12,7 @@ import TenantSettings from "../components/TenantSettings";
 import LandlordSettings from "../components/LandlordSettings";
 import TenantProfile from "../components/TenantProfile";
 import LandlordProfile from "../components/LandlordProfile";
+import LandLordAddRoom from "../components/LandLordAddRoom";
 
 const DashboardPage = () => {
   const navigate = useNavigate();
@@ -46,6 +47,8 @@ const DashboardPage = () => {
         return userType === "tenant" ? <TenantSettings /> : <LandlordSettings />;
       case "profile":
         return userType === "tenant" ? <TenantProfile /> : <LandlordProfile />;
+      case "addRoom":
+        return <div><LandLordAddRoom/></div>;
       default:
         return null;
     }
@@ -72,6 +75,7 @@ const Sidebar = ({ userType, selectedSection, setSelectedSection, handleLogout }
     { id: "dashboard", label: "Dashboard", icon: <Home size={iconSize} /> },
     { id: "notifications", label: "Notifications", icon: <Bell size={iconSize} /> },
     { id: "requests", label: "Requests", icon: <Layers size={iconSize} /> },
+    ...(userType === "landlord" ? [{ id: "addRoom", label: "Add Room", icon: <PlusCircle size={iconSize} /> }] : []),
     { id: "settings", label: "Settings", icon: <Settings size={iconSize} /> },
     { id: "profile", label: "Profile", icon: <User size={iconSize} /> },
   ];
@@ -85,18 +89,14 @@ const Sidebar = ({ userType, selectedSection, setSelectedSection, handleLogout }
         {collapsed ? <ChevronRight /> : <ChevronLeft />}
       </button>
       <h2 className="text-xl font-bold mb-5 h-10 text-center">
-        {collapsed
-          ? userType === "tenant" ? "TD" : "LD"
-          : userType === "tenant" ? "Tenant Dashboard" : "Landlord Dashboard"}
+        {collapsed ? (userType === "tenant" ? "TD" : "LD") : (userType === "tenant" ? "Tenant Dashboard" : "Landlord Dashboard")}
       </h2>
       <ul className="space-y-4">
         {menuItems.map((item) => (
           <li
             key={item.id}
             className={`flex items-center ${collapsed ? "justify-center" : "justify-start"} gap-4 cursor-pointer p-2 rounded-lg transition-colors duration-300 ${
-              selectedSection === item.id
-                ? "bg-purple-700 text-white"
-                : "text-gray-700 hover:bg-gray-100"
+              selectedSection === item.id ? "bg-purple-700 text-white" : "text-gray-700 hover:bg-gray-100"
             }`}
             onClick={() => setSelectedSection(item.id)}
           >

@@ -15,7 +15,7 @@ const TenantRegistration = () => {
   });
   const [notification, setNotification] = useState({ message: '', type: '' });
   const [showPassword, setShowPassword] = useState(false);
-const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({ password: '', confirmPassword: '' });
 
   const handleChange = (e) => {
@@ -247,59 +247,59 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
                 </div>
 
                 <div className="relative">
-  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-    Password <span className="text-red-500">*</span>
-  </label>
-  <input
-    type={showPassword ? "text" : "password"}
-    id="password"
-    name="password"
-    value={formData.password}
-    onChange={handleChange}
-    placeholder="••••••••"
-    className={`w-full p-3 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400 ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
-    required
-  />
-  <button
-    type="button"
-    onClick={() => setShowPassword((prev) => !prev)}
-    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-  >
-    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-  </button>
-  {errors.password && (
-    <p className="text-red-500 text-xs mt-1">{errors.password}</p>
-  )}
-  <p className="mt-1 text-xs text-gray-500">
-    Password must be at least 8 characters long
-  </p>
-</div>
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                    Password <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    className={`w-full p-3 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400 ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                  {errors.password && (
+                    <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+                  )}
+                  <p className="mt-1 text-xs text-gray-500">
+                    Password must be at least 8 characters long
+                  </p>
+                </div>
 
-<div className="relative">
-  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-    Confirm Password <span className="text-red-500">*</span>
-  </label>
-  <input
-    type={showConfirmPassword ? "text" : "password"}
-    id="confirmPassword"
-    name="confirmPassword"
-    value={formData.confirmPassword}
-    onChange={handleChange}
-    placeholder="••••••••"
-    className={`w-full p-3 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400 ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'}`}
-    required
-  />
-  <button
-    type="button"
-    onClick={() => setShowConfirmPassword((prev) => !prev)}
-    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-  >
-    {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-  </button>
-  {errors.confirmPassword && (
-    <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
-  )}
-</div>
+                <div className="relative">
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                    Confirm Password <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    className={`w-full p-3 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400 ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'}`}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                  >
+                    {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                  {errors.confirmPassword && (
+                    <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
+                  )}
+                </div>
 
 
 
