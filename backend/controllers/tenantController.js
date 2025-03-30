@@ -44,12 +44,8 @@ const loginTenant = async (req, res) => {
   
       if (tenant && (await bcrypt.compare(password, tenant.password))) {
         res.json({
-          _id: tenant._id,
           name: tenant.name,
-          email: tenant.email,
-          phone: tenant.phone,
           token: generateToken(tenant._id, "tenant"), // Including userType
-          redirectUrl: "/dashboard/tenant", // Redirection URL
         });
       } else {
         res.status(401).json({ message: "Invalid credentials" });
