@@ -8,7 +8,7 @@ const LandlordRegistration = () => {
     name: "",
     email: "",
     phone: "",
-    propertyLocation: "",
+    address: "",
     password: "",
     confirmPassword: "",
     loginEmail: "",
@@ -171,14 +171,14 @@ const LandlordRegistration = () => {
                 </div>
                 
                 <div>
-                  <label htmlFor="propertyLocation" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
                     Address <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
-                    id="propertyLocation"
-                    name="propertyLocation"
-                    value={formData.propertyLocation}
+                    id="address"
+                    name="address"
+                    value={formData.address}
                     onChange={handleChange}
                     placeholder="Address"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400"

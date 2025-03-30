@@ -1,25 +1,28 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios'
+import { Eye, EyeOff } from 'lucide-react';
+import Notification from '../components/Notification';
 
 const TenantRegistration = () => {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
-  const [userType, setUserType] = useState("tenant");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     password: "",
-    confirmPassword: "",
-    loginEmail: "",
-    loginPassword: ""
   });
+  const [notification, setNotification] = useState({ message: '', type: '' });
+  const [showPassword, setShowPassword] = useState(false);
+const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errors, setErrors] = useState({ password: '', confirmPassword: '' });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -32,23 +35,52 @@ const TenantRegistration = () => {
     }
   };
 
-  const handleLogin = () => {
-    // Simulate login logic
-    localStorage.setItem("userType", userType);
-    localStorage.setItem("token", "dummy-token");
-    navigate("/dashboard");
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post("http://localhost:8000/api/tenants/login", {
+        email: formData.email,
+        password: formData.password,
+      });
+      localStorage.setItem("token", response.data.token);
+      setNotification({ message: 'Login successful!', type: 'success' });
+      navigate("/dashboard");
+    } catch (error) {
+      setNotification({ message: 'Login failed.', type: 'error' });
+    }
   };
 
-  const handleRegister = () => {
-    // Simulate registration logic
-    localStorage.setItem("userType", userType);
-    localStorage.setItem("token", "dummy-token");
-    navigate("/dashboard");
+  const handleRegister = async () => {
+    try {
+      const newErrors = {};
+
+      if (formData.password.length < 8) {
+        newErrors.password = "Password must be at least 8 characters long";
+      }
+
+      if (formData.password !== formData.confirmPassword) {
+        newErrors.confirmPassword = "Passwords do not match";
+      }
+
+      if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
+        return;
+      }
+
+      await axios.post("http://localhost:8000/api/tenants/register", formData);
+      setNotification({ message: 'Registration successful! Please login.', type: 'success' });
+      setIsLogin(true);
+      setFormData({ name: '', email: '', phone: '', password: '', confirmPassword: '' });
+      setErrors({});
+    } catch (error) {
+      setNotification({ message: error.response?.data?.message || 'Registration failed', type: 'error' });
+    }
   };
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
+    setFormData({ name: '', email: '', phone: '', password: '' });
   };
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
@@ -103,42 +135,42 @@ const TenantRegistration = () => {
           <h2 className="text-3xl font-bold text-gray-800 mb-6">
             {isLogin ? "Tenant Login" : "Tenant Registration"}
           </h2>
-          
+
           <form onSubmit={handleSubmit} className="space-y-4">
             {isLogin ? (
               <>
                 <div>
-                  <label htmlFor="loginEmail" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                     Email Address <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
-                    id="loginEmail"
-                    name="loginEmail"
-                    value={formData.loginEmail}
+                    id="email"
+                    name="email"
+                    value={formData.email}
                     onChange={handleChange}
                     placeholder="your@email.com"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400"
                     required
                   />
                 </div>
-                
+
                 <div>
-                  <label htmlFor="loginPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                     Password <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="password"
-                    id="loginPassword"
-                    name="loginPassword"
-                    value={formData.loginPassword}
+                    id="password"
+                    name="password"
+                    value={formData.password}
                     onChange={handleChange}
                     placeholder="••••••••"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400"
                     required
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <input
@@ -157,7 +189,7 @@ const TenantRegistration = () => {
                     Forgot password?
                   </button>
                 </div>
-                
+
                 <button
                   type="submit"
                   className="bg-gradient-to-r from-purple-600 to-purple-800 text-white font-semibold px-4 py-2 rounded-lg hover:from-purple-800 hover:to-purple-600 focus:outline-none"
@@ -182,7 +214,7 @@ const TenantRegistration = () => {
                     required
                   />
                 </div>
-                
+
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                     Email Address <span className="text-red-500">*</span>
@@ -198,10 +230,10 @@ const TenantRegistration = () => {
                     required
                   />
                 </div>
-                
+
                 <div>
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number
+                    Phone Number <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="tel"
@@ -213,42 +245,64 @@ const TenantRegistration = () => {
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400"
                   />
                 </div>
-                
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                    Password <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="••••••••"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400"
-                    required
-                  />
-                  <p className="mt-1 text-xs text-gray-500">
-                    Password must be at least 8 characters long
-                  </p>
-                </div>
-                
-                <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                    Confirm Password <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="password"
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    placeholder="••••••••"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400"
-                    required
-                  />
-                </div>
-                
+
+                <div className="relative">
+  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+    Password <span className="text-red-500">*</span>
+  </label>
+  <input
+    type={showPassword ? "text" : "password"}
+    id="password"
+    name="password"
+    value={formData.password}
+    onChange={handleChange}
+    placeholder="••••••••"
+    className={`w-full p-3 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400 ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
+    required
+  />
+  <button
+    type="button"
+    onClick={() => setShowPassword((prev) => !prev)}
+    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+  >
+    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+  </button>
+  {errors.password && (
+    <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+  )}
+  <p className="mt-1 text-xs text-gray-500">
+    Password must be at least 8 characters long
+  </p>
+</div>
+
+<div className="relative">
+  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+    Confirm Password <span className="text-red-500">*</span>
+  </label>
+  <input
+    type={showConfirmPassword ? "text" : "password"}
+    id="confirmPassword"
+    name="confirmPassword"
+    value={formData.confirmPassword}
+    onChange={handleChange}
+    placeholder="••••••••"
+    className={`w-full p-3 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400 ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'}`}
+    required
+  />
+  <button
+    type="button"
+    onClick={() => setShowConfirmPassword((prev) => !prev)}
+    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+  >
+    {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+  </button>
+  {errors.confirmPassword && (
+    <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
+  )}
+</div>
+
+
+
                 <div className="flex items-center">
                   <input
                     type="checkbox"
@@ -260,7 +314,7 @@ const TenantRegistration = () => {
                     I agree to the <a href="#" className="text-blue-500 hover:text-blue-600">Terms of Service</a> and <a href="#" className="text-blue-500 hover:text-blue-600">Privacy Policy</a>
                   </label>
                 </div>
-                
+
                 <button
                   type="submit"
                   className="bg-gradient-to-r from-purple-600 to-purple-800 text-white font-semibold px-4 py-2 rounded-lg hover:from-purple-800 hover:to-purple-600 focus:outline-none"
@@ -270,8 +324,8 @@ const TenantRegistration = () => {
               </>
             )}
           </form>
-          
-          
+
+
           <p className="text-center mt-3 text-gray-600">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button
@@ -281,7 +335,7 @@ const TenantRegistration = () => {
               {isLogin ? "Register here" : "Sign in"}
             </button>
           </p>
-          
+
           <button
             onClick={() => navigate("/")}
             className="bg-gradient-to-r from-slate-600 to-slate-800 text-white font-semibold px-4 py-2 mt-2 rounded-lg hover:from-slate-800 hover:to-slate-600 focus:outline-none"
@@ -290,6 +344,16 @@ const TenantRegistration = () => {
           </button>
         </div>
       </div>
+
+      {notification.message && (
+        <Notification
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification({ message: '', type: '' })}
+        />
+      )}
+
+
     </div>
   );
 };
