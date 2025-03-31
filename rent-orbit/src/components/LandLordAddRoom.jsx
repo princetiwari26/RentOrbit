@@ -2,6 +2,7 @@ import { useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { X, ChevronDown } from "lucide-react";
+import axios from 'axios';
 
 // Draggable Item Component
 const DragItem = ({ text, type, onDrop }) => {
@@ -128,12 +129,9 @@ const LandLordAddRoom = () => {
     paymentPlan: "",
     tenant: [],
     restriction: [],
-    amenities: [],
+    // amenities: [],
     rent: "",
     caution: "",
-    landlordName: "",
-    contact: "",
-    email: "",
     description: "",
   });
 
@@ -273,14 +271,38 @@ const LandLordAddRoom = () => {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitted:", formData);
+    // Get token from localStorage
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('User is not Authenticated');
+      return;
+    }
+    try {
+      // API call to create a room
+      const response = await axios.post(
+        'http://localhost:8000/api/room',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      // console.log('Room created successfully:', response.data);
+      alert('Room created successfully!');
+      
+    } catch (error) {
+      console.error('Error submitting room:', error);
+      alert(error.response?.data?.message || 'Failed to create room');
+    }
   };
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="min-h-screen bg-gray-50 p-2">
         <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-sm p-8 border border-gray-100">
           <h1 className="text-2xl font-bold text-center text-gray-800 mb-8">
             List Your Property
@@ -549,7 +571,7 @@ const LandLordAddRoom = () => {
             </Section>
 
             {/* Amenities Section */}
-            <Section title="Amenities & Features">
+            {/* <Section title="Amenities & Features">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Select Amenities
               </label>
@@ -568,7 +590,7 @@ const LandLordAddRoom = () => {
                 items={formData.amenities}
                 onRemove={(index) => handleRemove("amenities", index)}
               />
-            </Section>
+            </Section> */}
 
             {/* Additional Information */}
             <Section title="Additional Information">
@@ -584,58 +606,11 @@ const LandLordAddRoom = () => {
               />
             </Section>
 
-            {/* Landlord Details */}
-            <Section title="Contact Information">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Landlord/Owner Name
-                  </label>
-                  <input
-                    type="text"
-                    name="landlordName"
-                    placeholder="Your full name"
-                    className="w-full p-2 border border-gray-200 rounded-md bg-white"
-                    value={formData.landlordName}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Contact Number
-                  </label>
-                  <input
-                    type="tel"
-                    name="contact"
-                    placeholder="10-digit mobile number"
-                    className="w-full p-2 border border-gray-200 rounded-md bg-white"
-                    value={formData.contact}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address (Optional)
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Your email address"
-                    className="w-full p-2 border border-gray-200 rounded-md bg-white"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-            </Section>
-
             {/* Submit Button */}
             <div className="flex justify-center mt-8">
               <button
                 type="submit"
-                className="px-8 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-md"
+                className="bg-gradient-to-r from-green-600 to-green-800 text-white font-semibold px-4 py-2 rounded-lg hover:from-green-800 hover:to-green-600 focus:outline-none"
               >
                 Submit Property Listing
               </button>

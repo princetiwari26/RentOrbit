@@ -18,6 +18,7 @@ const DashboardPage = () => {
   const navigate = useNavigate();
   const [userType, setUserType] = useState(null);
   const [selectedSection, setSelectedSection] = useState("dashboard");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -61,14 +62,33 @@ const DashboardPage = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      <Sidebar userType={userType} selectedSection={selectedSection} setSelectedSection={setSelectedSection} handleLogout={handleLogout} />
-      <div className="flex-1 p-8">{renderSection()}</div>
+      {/* Fixed Sidebar */}
+      <div className="fixed h-full">
+        <Sidebar 
+          userType={userType} 
+          selectedSection={selectedSection} 
+          setSelectedSection={setSelectedSection} 
+          handleLogout={handleLogout}
+          collapsed={sidebarCollapsed}
+          setCollapsed={setSidebarCollapsed}
+        />
+      </div>
+      
+      {/* Dynamic Content Area */}
+      <div 
+        className={`flex-1 px-4 overflow-y-auto h-screen transition-all duration-300`}
+        style={{ 
+          marginLeft: sidebarCollapsed ? '5rem' : '16rem',
+          width: sidebarCollapsed ? 'calc(100% - 5rem)' : 'calc(100% - 16rem)'
+        }}
+      >
+        {renderSection()}
+      </div>
     </div>
   );
 };
 
-const Sidebar = ({ userType, selectedSection, setSelectedSection, handleLogout }) => {
-  const [collapsed, setCollapsed] = useState(false);
+const Sidebar = ({ userType, selectedSection, setSelectedSection, handleLogout, collapsed, setCollapsed }) => {
   const iconSize = 24;
 
   const menuItems = [
@@ -81,7 +101,10 @@ const Sidebar = ({ userType, selectedSection, setSelectedSection, handleLogout }
   ];
 
   return (
-    <div className={`relative h-full ${collapsed ? "w-20" : "w-64"} bg-white shadow-lg p-6 transition-all duration-300 h-screen`}>
+    <div 
+      className={`h-full ${collapsed ? "w-20" : "w-64"} bg-white shadow-lg p-6 transition-all duration-300`}
+      style={{ height: '100vh' }}
+    >
       <button
         className="absolute top-4 right-[-12px] bg-purple-700 text-white rounded-full p-1 shadow-lg"
         onClick={() => setCollapsed(!collapsed)}
@@ -105,7 +128,7 @@ const Sidebar = ({ userType, selectedSection, setSelectedSection, handleLogout }
           </li>
         ))}
       </ul>
-      <div className="mt-10">
+      <div className="mt-3">
         <div
           className={`flex items-center ${collapsed ? "justify-center" : "justify-start"} gap-4 cursor-pointer p-2 rounded-lg transition-colors duration-300 text-white hover:bg-gray-500 bg-slate-800`}
           onClick={handleLogout}
