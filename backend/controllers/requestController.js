@@ -157,6 +157,47 @@ const updateRequestStatus = asyncHandler(async (req, res) => {
         return res.status(200).json({ message: "Request cancelled by landlord.", request });
     }
 
+    if (action === "tenant-confirm") {
+        if (userType !== "tenant" || requestTenantId !== userId) {
+            return res.status(403).json({ message: "Unauthorized action for tenant." });
+        }
+
+        const room = await Room.findById(request.room);
+
+        if (!room) {
+            return res.status(404).json({ message: "Room not found." });
+        }
+
+        // Mark room as occupied
+        room.roomStatus = "Occupied";
+        room.isActive = true;  // Ensure isActive stays true
+        room.tenant = userId;
+        await room.save();
+
+        request.status = "completed";
+        await request.save();
+
+        // Add the room to tenant's occupied rooms
+        await Tenant.findByIdAndUpdate(userId, {
+            $push: { roomsOccupied: room._id }
+        });
+
+        const notification = new Notification({
+            tenant: userId,
+            landlord: request.landlord,
+            room: request.room,
+            request: request._id,
+            title: `Tenant confirmed the room`,
+            message: `The tenant has confirmed the room and taken possession.`,
+            notificationType: 'roomStatus',
+            status: 'completed',
+            isRead: false
+        });
+        await notification.save();
+
+        return res.status(200).json({ message: "Room confirmed by tenant.", request });
+    }
+
     return res.status(400).json({ message: "Invalid action type." });
 });
 

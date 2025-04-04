@@ -8,7 +8,7 @@ const getLandlordNotifications = asyncHandler(async (req, res) => {
             throw new Error('Access denied, only landlords can view notifications');
         }
 
-        const notifications = await Notification.find({ landlord: req.user.id, status: { $in: ['pending', 'tenant-cancelled'] } })
+        const notifications = await Notification.find({ landlord: req.user.id, status: { $in: ['pending', 'tenant-cancelled', 'completed'] } })
             .sort({ createdAt: -1 });
 
         if (!notifications.length) {
