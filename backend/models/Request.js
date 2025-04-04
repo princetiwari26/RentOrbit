@@ -28,18 +28,6 @@ const requestSchema = new mongoose.Schema({
         enum: ['pending', 'confirmed', 'rejected', 'visit-confirmed', 'completed', 'cancelled'],
         default: 'pending'
     },
-    landlordConfirmation: {
-        type: Boolean,
-        default: false
-    },
-    tenantConfirmation: {
-        type: Boolean,
-        default: false
-    },
-    visitConfirmed: {
-        type: Boolean,
-        default: false
-    },
     createdAt: {
         type: Date,
         default: Date.now

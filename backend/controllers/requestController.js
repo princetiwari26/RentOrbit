@@ -4,6 +4,7 @@ const Tenant = require('../models/Tenant');
 const Notification = require('../models/Notification');
 const asyncHandler = require("express-async-handler");
 const jwt = require('jsonwebtoken');
+const moment = require("moment");
 
 const createRequest = async (req, res) => {
     try {
@@ -159,4 +160,35 @@ const updateRequestStatus = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Invalid action type." });
 });
 
-module.exports = { createRequest, getRequests, updateRequestStatus };
+const finalRoomRequestByTenant = async (req, res) => {
+    try {
+        const tenantId = req.user.id; // Extract tenant ID from token middleware
+        const today = moment().startOf("day").toDate();
+
+        const requests = await Request.find({
+            tenant: tenantId,
+            status: "confirmed",
+            visitDate: { $gte: today, $lt: moment(today).endOf("day").toDate() }
+        }).populate({
+            path: "room",
+            populate: {
+                path: "landlord",
+                select: "name phone email"
+            }
+        });
+
+        if (!requests || requests.length === 0) {
+            return res.status(404).json({ message: "No confirmed requests found for today." });
+        }
+
+        res.json(requests);
+    } catch (error) {
+        console.error("Error fetching requests:", error);
+        if (!res.headersSent) {
+            res.status(500).json({ message: "Server Error" });
+        }
+    }
+};
+
+
+module.exports = { createRequest, getRequests, updateRequestStatus, finalRoomRequestByTenant };

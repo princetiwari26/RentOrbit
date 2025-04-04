@@ -93,10 +93,10 @@ const roomSchema = new Schema({
     type: [String],
     default: []
   },
-  status: {
+  roomStatus: {
     type: String,
-    enum: ['active', 'occupied', 'inactive'],
-    default: 'active'
+    enum: ['Active', 'Occupied', 'Inactive'],
+    default: 'Active'
   },
   tenant: {
     type: Schema.Types.ObjectId,

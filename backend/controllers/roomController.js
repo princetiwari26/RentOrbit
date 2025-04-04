@@ -42,7 +42,8 @@ const createRoom = asyncHandler(async (req, res) => {
     description,
     photos,
     landlord: req.user.id,
-    isActive: true
+    isActive: true,
+    roomStatus: 'Active',
   });
 
   res.status(201).json(room);
