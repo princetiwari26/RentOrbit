@@ -48,9 +48,8 @@ const createRoom = asyncHandler(async (req, res) => {
   res.status(201).json(room);
 });
 
-const getRooms = async(req, res) => {
+const getLandlordRooms = async(req, res) => {
   try {
-    // Check if the user is a landlord
     if (req.user.userType !== "landlord") {
       return res.status(403).json({
         success: false,
@@ -58,10 +57,8 @@ const getRooms = async(req, res) => {
       });
     }
 
-    // Get rooms where landlordId matches the authenticated user's ID
     const rooms = await Room.find({ landlord: req.user.id });
 
-    // Check if rooms exist
     if (!rooms || rooms.length === 0) {
       return res.status(404).json({
         success: false,
@@ -84,7 +81,119 @@ const getRooms = async(req, res) => {
   }
 }
 
+const getAllRooms = async (req, res) => {
+  try {
+    const {
+      minPrice,
+      maxPrice,
+      accommodationType,
+      roomType,
+      city,
+      state,
+      tenantsAllowed,
+      deposit
+    } = req.query;
+
+    const filter = {};
+
+    if (minPrice || maxPrice) {
+      filter.rent = {};
+      if (minPrice) filter.rent.$gte = parseInt(minPrice);
+      if (maxPrice) filter.rent.$lte = parseInt(maxPrice);
+    }
+
+    if (accommodationType) {
+      filter.accommodation = { $in: accommodationType.split(',') };
+    }
+
+    if (roomType) {
+      filter.roomType = { $in: roomType.split(',') };
+    }
+
+    if (city) {
+      filter['address.city'] = new RegExp(city, 'i'); // Case insensitive
+    }
+    if (state) {
+      filter['address.state'] = new RegExp(state, 'i');
+    }
+
+    if (tenantsAllowed) {
+      filter.tenant = { $in: tenantsAllowed.split(',') };
+    }
+
+    if (deposit) {
+      filter.deposit = { $in: deposit.split(',') };
+    }
+
+    if (req.query.search) {
+      const searchRegex = new RegExp(req.query.search, 'i');
+      filter.$or = [
+        { 'address.houseNumber': searchRegex },
+        { 'address.street': searchRegex },
+        { 'address.locality': searchRegex },
+        { 'address.landmark': searchRegex },
+        { 'address.city': searchRegex },
+        { 'address.state': searchRegex }
+      ];
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const total = await Room.countDocuments(filter);
+
+    const rooms = await Room.find(filter)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: rooms.length,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+      data: rooms
+    });
+
+  } catch (error) {
+    console.error('Error fetching rooms:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching rooms'
+    });
+  }
+};
+
+const getRoomById = async (req, res) => {
+  try {
+    const room = await Room.findById(req.params.id);
+    
+    if (!room) {
+      return res.status(404).json({
+        success: false,
+        message: 'Room not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: room
+    });
+
+  } catch (error) {
+    console.error('Error fetching room:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching room'
+    });
+  }
+};
+
 module.exports = {
   createRoom,
-  getRooms
+  getLandlordRooms,
+  getAllRooms,
+  getRoomById,
 };

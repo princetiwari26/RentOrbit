@@ -5,7 +5,11 @@ const landlordSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     phone: { type: String, required: true },
     address: { type: String, required: true },
-    password: { type: String, required: true }
+    password: { type: String, required: true },
+    activeRooms: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Room'
+    }]
 }, { timestamps: true });
 
 module.exports = mongoose.model("Landlord", landlordSchema);

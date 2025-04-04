@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const asyncHandler = require('express-async-handler')
 const Tenant = require("../models/Tenant");
 const generateToken = require("../utils/generateToken");
 
@@ -13,7 +14,6 @@ const registerTenant = async (req, res) => {
             return res.status(400).json({ message: "Tenant already exists" });
         }
 
-        // Hash the password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -45,7 +45,7 @@ const loginTenant = async (req, res) => {
       if (tenant && (await bcrypt.compare(password, tenant.password))) {
         res.json({
           name: tenant.name,
-          token: generateToken(tenant._id, "tenant"), // Including userType
+          token: generateToken(tenant._id, "tenant"),
         });
       } else {
         res.status(401).json({ message: "Invalid credentials" });
@@ -55,10 +55,18 @@ const loginTenant = async (req, res) => {
     }
   };
 
+  const getTenantProfile = asyncHandler(async (req, res) => {
+    if (req.user.userType !== "tenant") {
+      return res.status(403).json({ message: "Unauthorized action for tenant" });
+    }
+  
+    const tenant = await Tenant.findById(req.user.id).select("-password");
+  
+    if (!tenant) {
+      return res.status(404).json({ message: "Tenant profile not found" });
+    }
+  
+    res.status(200).json(tenant);
+  });
 
-// Tenant Dashboard
-const tenantDashboard = (req, res) => {
-    res.json({ message: `Welcome to Tenant Dashboard, ${req.tenant.name}` });
-};
-
-module.exports = { registerTenant, loginTenant, tenantDashboard };
+module.exports = { registerTenant, loginTenant, getTenantProfile };

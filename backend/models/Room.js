@@ -2,14 +2,14 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const addressSchema = new Schema({
-  houseNumber: { type: String},
-  street: { type: String},
-  locality: { type: String},
+  houseNumber: { type: String },
+  street: { type: String },
+  locality: { type: String },
   landmark: { type: String },
-  city: { type: String},
-  district: { type: String},
-  state: { type: String},
-  pincode: { type: String},
+  city: { type: String },
+  district: { type: String },
+  state: { type: String },
+  pincode: { type: String },
   country: { type: String, default: 'India' },
 });
 
@@ -22,12 +22,12 @@ const roomSchema = new Schema({
     type: [String],
     // required: true,
   },
-  
+
   address: {
     type: addressSchema,
     // required: true
   },
-  
+
   rent: {
     type: Number,
     // required: true,
@@ -46,7 +46,7 @@ const roomSchema = new Schema({
     type: String,
     // required: true
   },
-  
+
   suitableFor: {
     type: [String],
     default: []
@@ -55,7 +55,7 @@ const roomSchema = new Schema({
     type: [String],
     default: []
   },
-  
+
   // Amenities
   // amenities: {
   //   type: [String],
@@ -84,7 +84,7 @@ const roomSchema = new Schema({
   //   ],
   //   default: []
   // },
-  
+
   description: {
     type: String,
     trim: true
@@ -93,13 +93,26 @@ const roomSchema = new Schema({
     type: [String],
     default: []
   },
-  
+  status: {
+    type: String,
+    enum: ['active', 'occupied', 'inactive'],
+    default: 'active'
+  },
+  tenant: {
+    type: Schema.Types.ObjectId,
+    ref: 'Tenant',
+    default: null
+  },
+
   landlord: {
     type: Schema.Types.ObjectId,
     ref: 'Landlord',
     // required: true
   },
-  
+  joiningDate: {
+    type: Date,
+  },
+
   isActive: {
     type: Boolean,
     default: true
