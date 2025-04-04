@@ -81,7 +81,6 @@ const getLandlordRooms = async(req, res) => {
     });
   }
 }
-
 const getAllRooms = async (req, res) => {
   try {
     const {
@@ -95,7 +94,9 @@ const getAllRooms = async (req, res) => {
       deposit
     } = req.query;
 
-    const filter = {};
+    const filter = {
+      roomStatus: 'Active'
+    };
 
     if (minPrice || maxPrice) {
       filter.rent = {};
@@ -114,6 +115,7 @@ const getAllRooms = async (req, res) => {
     if (city) {
       filter['address.city'] = new RegExp(city, 'i'); // Case insensitive
     }
+
     if (state) {
       filter['address.state'] = new RegExp(state, 'i');
     }
@@ -166,6 +168,7 @@ const getAllRooms = async (req, res) => {
     });
   }
 };
+
 
 const getRoomById = async (req, res) => {
   try {
