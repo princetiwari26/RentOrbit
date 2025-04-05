@@ -1,5 +1,13 @@
 const Room = require('../models/Room');
 const asyncHandler = require('express-async-handler');
+const cloudinary = require('cloudinary').v2;
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: 'dfilgwps9',
+  api_key: '461796494297831',
+  api_secret: '9tzOAIAPEH_o5-2BSOz9DD98oXE'
+});
 
 const createRoom = asyncHandler(async (req, res) => {
   if (req.user.userType !== 'landlord') {
@@ -17,14 +25,31 @@ const createRoom = asyncHandler(async (req, res) => {
     paymentPlan,
     suitableFor,
     restrictions,
-    // amenities,
-    description,
-    photos
+    description
   } = req.body;
 
   if (!accommodation || !roomType || !address || !rent ) {
     res.status(400);
     throw new Error('Please include all required fields');
+  }
+
+  // Handle file uploads
+  let imageUrls = [];
+  if (req.files && req.files.photos) {
+    const files = Array.isArray(req.files.photos) ? req.files.photos : [req.files.photos];
+    
+    try {
+      // Upload each image to Cloudinary
+      for (const file of files) {
+        const result = await cloudinary.uploader.upload(file.tempFilePath, {
+          folder: 'room_images'
+        });
+        imageUrls.push(result.secure_url);
+      }
+    } catch (error) {
+      res.status(500);
+      throw new Error('Image upload failed');
+    }
   }
 
   // Create the room
@@ -38,9 +63,8 @@ const createRoom = asyncHandler(async (req, res) => {
     paymentPlan,
     suitableFor,
     restrictions,
-    // amenities,
     description,
-    photos,
+    photos: imageUrls,
     landlord: req.user.id,
     isActive: true,
     roomStatus: 'Active',
@@ -48,6 +72,10 @@ const createRoom = asyncHandler(async (req, res) => {
 
   res.status(201).json(room);
 });
+
+module.exports = {
+  createRoom
+};
 
 const getLandlordRooms = async(req, res) => {
   try {
