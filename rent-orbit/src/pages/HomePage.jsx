@@ -1,16 +1,26 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Home, Building, User, HelpCircle, MapPin, Phone, Mail, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 import Footer from "../components/Footer";
+import PreLoader from "../components/PreLoader";
 
 const HomePage = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleChoice = (userType) => {
-    setShowPopup(false);
+    setIsLoading(true); // Show loader when navigating
     navigate(`/${userType}`);
   };
 
@@ -19,13 +29,15 @@ const HomePage = () => {
     { name: "Properties", icon: <Building className="w-5 h-5" />, path: "/#" },
     { name: "About", icon: <HelpCircle className="w-5 h-5" />, path: "/#" },
     { name: "Find a Room", path: "/tenant" },
-    { name: "List a Property", path: "/landlord" },
+    { name: "List a Room", path: "/landlord" },
   ];
+
+  if (isLoading) {
+    return <PreLoader />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col">
-
-      {/* Navigation Bar */}
       <nav className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
@@ -37,9 +49,8 @@ const HomePage = () => {
               className="flex items-center"
             >
               <Link>
-                <span className="text-2xl font-bold text-gray-900">
-                  <span className="text-blue-600">Rent</span>
-                  <span className="text-purple-600">Orbit</span>
+                <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-orange-500">
+                  RentOrbit
                 </span>
               </Link>
             </motion.div>
@@ -51,7 +62,7 @@ const HomePage = () => {
                   key={item.name}
                   href={item.path}
                   className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${item.name.includes("Find")
-                    ? "text-white bg-blue-600 hover:bg-blue-700 hover:scale-[1.05]"
+                    ? "text-white bg-orange-600 hover:bg-orange-700 hover:scale-[1.05]"
                     : item.name.includes("List")
                       ? "text-white bg-purple-600 hover:bg-purple-700 hover:scale-[1.05]"
                       : "text-white-700 hover:text-gray-900"
@@ -67,7 +78,7 @@ const HomePage = () => {
             <div className="md:hidden flex items-center">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-blue-600 focus:outline-none"
+                className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-orange-600 focus:outline-none"
               >
                 <svg
                   className={`${isMenuOpen ? "hidden" : "block"} h-6 w-6`}
@@ -110,7 +121,7 @@ const HomePage = () => {
                 key={item.name}
                 href={item.path}
                 className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${item.name.includes("Find")
-                  ? "text-white bg-blue-600 hover:bg-blue-700"
+                  ? "text-white bg-orange-600 hover:bg-orange-700"
                   : item.name.includes("List")
                     ? "text-white bg-purple-600 hover:bg-purple-700"
                     : "text-white-700 hover:text-gray-900"
@@ -136,7 +147,7 @@ const HomePage = () => {
             >
               <h1 className="text-3xl md:text-6xl font-bold text-gray-900 mb-6">
                 Direct Rental Connections <br />
-                <span className="mt-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+                <span className="mt-4 text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-purple-600">
                   #MadeSimple
                 </span>
               </h1>
@@ -154,7 +165,7 @@ const HomePage = () => {
             >
               <button
                 onClick={() => setShowPopup(true)}
-                className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 font-medium text-lg"
+                className="bg-gradient-to-r from-orange-500 to-purple-500 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 font-medium text-lg"
               >
                 Get Started
               </button>
@@ -182,8 +193,8 @@ const HomePage = () => {
                     "Contact landlords directly",
                     "Schedule viewings easily"
                   ],
-                  icon: <User className="w-10 h-10 text-blue-600" />,
-                  color: "blue"
+                  icon: <User className="w-10 h-10 text-orange-600" />,
+                  color: "orange"
                 },
                 {
                   title: "For Landlords",
@@ -215,8 +226,8 @@ const HomePage = () => {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   viewport={{ once: true }}
                   whileHover={{ y: -5 }}
-                  className={`bg-gray-50 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow border-t-4 ${column.color === "blue"
-                    ? "border-blue-500"
+                  className={`bg-gray-50 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow border-t-4 ${column.color === "orange"
+                    ? "border-orange-500"
                     : column.color === "purple"
                       ? "border-purple-500"
                       : "border-green-500"
@@ -288,7 +299,7 @@ const HomePage = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+        <section className="py-16 bg-gradient-to-r from-orange-500 to-purple-600 text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -297,12 +308,12 @@ const HomePage = () => {
               viewport={{ once: true }}
             >
               <h2 className="text-3xl font-bold mb-6">Ready to Simplify Your Rental Experience?</h2>
-              <p className="text-blue-100 max-w-2xl mx-auto mb-8">
+              <p className="text-orange-100 max-w-2xl mx-auto mb-8">
                 Join thousands of tenants and landlords who are already using RentOrbit to connect directly.
               </p>
               <button
                 onClick={() => setShowPopup(true)}
-                className="bg-white text-blue-600 px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 font-medium"
+                className="bg-white text-orange-600 px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 font-medium"
               >
                 Get Started Now
               </button>
@@ -334,7 +345,7 @@ const HomePage = () => {
               <div className="flex flex-col space-y-4">
                 <button
                   onClick={() => handleChoice("tenant")}
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
                 >
                   I'm a Tenant
                 </button>

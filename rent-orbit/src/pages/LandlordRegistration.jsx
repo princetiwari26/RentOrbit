@@ -192,13 +192,9 @@ const LandlordRegistration = () => {
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
               <div className="p-6 sm:p-8 md:p-10">
                 <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center">
-                    <Home className="h-8 w-8 text-green-600 mr-2" />
-                    <span className="text-2xl font-bold text-gray-800">RentalHub</span>
-                  </div>
                   <button
                     onClick={() => navigate("/")}
-                    className="text-sm font-medium text-gray-600 hover:text-green-600 transition-colors"
+                    className="text-sm font-medium text-gray-600 hover:text-purple-600 transition-colors"
                   >
                     Back to Home
                   </button>
@@ -228,7 +224,7 @@ const LandlordRegistration = () => {
                           value={formData.name}
                           onChange={handleChange}
                           placeholder="John Doe"
-                          className={`w-full pl-10 pr-3 py-3 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400`}
+                          className={`w-full pl-10 pr-3 py-3 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400`}
                         />
                       </div>
                       {errors.name && (
@@ -254,7 +250,7 @@ const LandlordRegistration = () => {
                         value={formData.email}
                         onChange={handleChange}
                         placeholder="your@email.com"
-                        className={`w-full pl-10 pr-3 py-3 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400`}
+                        className={`w-full pl-10 pr-3 py-3 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400`}
                       />
                     </div>
                     {errors.email && (
@@ -281,7 +277,7 @@ const LandlordRegistration = () => {
                             value={formData.phone}
                             onChange={handleChange}
                             placeholder="+1 (123) 456-7890"
-                            className={`w-full pl-10 pr-3 py-3 border ${errors.phone ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400`}
+                            className={`w-full pl-10 pr-3 py-3 border ${errors.phone ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400`}
                           />
                         </div>
                         {errors.phone && (
@@ -306,7 +302,7 @@ const LandlordRegistration = () => {
                             value={formData.address}
                             onChange={handleChange}
                             placeholder="123 Main St, City, Country"
-                            className={`w-full pl-10 pr-3 py-3 border ${errors.address ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400`}
+                            className={`w-full pl-10 pr-3 py-3 border ${errors.address ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400`}
                           />
                         </div>
                         {errors.address && (
@@ -333,7 +329,7 @@ const LandlordRegistration = () => {
                         value={formData.password}
                         onChange={handleChange}
                         placeholder="••••••••"
-                        className={`w-full pl-10 pr-10 py-3 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400`}
+                        className={`w-full pl-10 pr-10 py-3 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400`}
                       />
                       <button
                         type="button"
@@ -371,7 +367,7 @@ const LandlordRegistration = () => {
                           value={formData.confirmPassword}
                           onChange={handleChange}
                           placeholder="••••••••"
-                          className={`w-full pl-10 pr-10 py-3 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-400`}
+                          className={`w-full pl-10 pr-10 py-3 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400`}
                         />
                         <button
                           type="button"
@@ -397,7 +393,7 @@ const LandlordRegistration = () => {
                           id="rememberMe"
                           checked={rememberMe}
                           onChange={(e) => setRememberMe(e.target.checked)}
-                          className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                          className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
                         />
                         <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">
                           Remember me
@@ -405,7 +401,7 @@ const LandlordRegistration = () => {
                       </div>
                       <button
                         type="button"
-                        className="text-sm font-medium text-green-600 hover:text-green-700"
+                        className="text-sm font-medium text-purple-600 hover:text-purple-700"
                       >
                         Forgot password?
                       </button>
@@ -418,12 +414,12 @@ const LandlordRegistration = () => {
                         <input
                           type="checkbox"
                           id="terms"
-                          className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                          className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
                           required
                         />
                       </div>
                       <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
-                        I agree to the <a href="#" className="font-medium text-green-600 hover:text-green-700">Terms of Service</a> and <a href="#" className="font-medium text-green-600 hover:text-green-700">Privacy Policy</a>
+                        I agree to the <a href="#" className="font-medium text-purple-600 hover:text-purple-700">Terms of Service</a> and <a href="#" className="font-medium text-purple-600 hover:text-purple-700">Privacy Policy</a>
                       </label>
                     </div>
                   )}
@@ -431,7 +427,7 @@ const LandlordRegistration = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-white font-medium bg-gradient-to-r from-green-600 to-green-800 hover:from-green-700 hover:to-green-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300 ${isSubmitting ? 'opacity-75 cursor-not-allowed' : ''}`}
+                    className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-white font-medium bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-300 ${isSubmitting ? 'opacity-75 cursor-not-allowed' : ''}`}
                   >
                     {isSubmitting ? (
                       <>
@@ -459,7 +455,7 @@ const LandlordRegistration = () => {
 
                   <button
                     onClick={toggleForm}
-                    className="mt-4 w-full flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-300"
+                    className="mt-4 w-full flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors duration-300"
                   >
                     {isLogin ? "Create landlord account" : "Sign in to your account"}
                   </button>

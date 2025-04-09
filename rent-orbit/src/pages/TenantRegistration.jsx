@@ -188,13 +188,10 @@ const TenantRegistration = () => {
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
               <div className="p-6 sm:p-8 md:p-10">
                 <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center">
-                    <Home className="h-8 w-8 text-purple-600 mr-2" />
-                    <span className="text-2xl font-bold text-gray-800">RentalHub</span>
-                  </div>
+                  
                   <button
                     onClick={() => navigate("/")}
-                    className="text-sm font-medium text-gray-600 hover:text-purple-600 transition-colors"
+                    className="text-sm font-medium text-gray-600 hover:text-orange-600 transition-colors"
                   >
                     Back to Home
                   </button>
@@ -224,7 +221,7 @@ const TenantRegistration = () => {
                           value={formData.name}
                           onChange={handleChange}
                           placeholder="John Doe"
-                          className={`w-full pl-10 pr-3 py-3 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400`}
+                          className={`w-full pl-10 pr-3 py-3 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent placeholder-gray-400`}
                         />
                       </div>
                       {errors.name && (
@@ -250,7 +247,7 @@ const TenantRegistration = () => {
                         value={formData.email}
                         onChange={handleChange}
                         placeholder="your@email.com"
-                        className={`w-full pl-10 pr-3 py-3 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400`}
+                        className={`w-full pl-10 pr-3 py-3 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent placeholder-gray-400`}
                       />
                     </div>
                     {errors.email && (
@@ -276,7 +273,7 @@ const TenantRegistration = () => {
                           value={formData.phone}
                           onChange={handleChange}
                           placeholder="+1 (123) 456-7890"
-                          className={`w-full pl-10 pr-3 py-3 border ${errors.phone ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400`}
+                          className={`w-full pl-10 pr-3 py-3 border ${errors.phone ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent placeholder-gray-400`}
                         />
                       </div>
                       {errors.phone && (
@@ -302,7 +299,7 @@ const TenantRegistration = () => {
                         value={formData.password}
                         onChange={handleChange}
                         placeholder="••••••••"
-                        className={`w-full pl-10 pr-10 py-3 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400`}
+                        className={`w-full pl-10 pr-10 py-3 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent placeholder-gray-400`}
                       />
                       <button
                         type="button"
@@ -340,7 +337,7 @@ const TenantRegistration = () => {
                           value={formData.confirmPassword}
                           onChange={handleChange}
                           placeholder="••••••••"
-                          className={`w-full pl-10 pr-10 py-3 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400`}
+                          className={`w-full pl-10 pr-10 py-3 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent placeholder-gray-400`}
                         />
                         <button
                           type="button"
@@ -366,7 +363,7 @@ const TenantRegistration = () => {
                           id="rememberMe"
                           checked={rememberMe}
                           onChange={(e) => setRememberMe(e.target.checked)}
-                          className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                          className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
                         />
                         <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">
                           Remember me
@@ -374,7 +371,7 @@ const TenantRegistration = () => {
                       </div>
                       <button
                         type="button"
-                        className="text-sm font-medium text-purple-600 hover:text-purple-700"
+                        className="text-sm font-medium text-orange-600 hover:text-orange-700"
                       >
                         Forgot password?
                       </button>
@@ -387,12 +384,12 @@ const TenantRegistration = () => {
                         <input
                           type="checkbox"
                           id="terms"
-                          className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                          className="h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
                           required
                         />
                       </div>
                       <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
-                        I agree to the <a href="#" className="font-medium text-purple-600 hover:text-purple-700">Terms of Service</a> and <a href="#" className="font-medium text-purple-600 hover:text-purple-700">Privacy Policy</a>
+                        I agree to the <a href="#" className="font-medium text-orange-600 hover:text-orange-700">Terms of Service</a> and <a href="#" className="font-medium text-orange-600 hover:text-orange-700">Privacy Policy</a>
                       </label>
                     </div>
                   )}
@@ -400,7 +397,7 @@ const TenantRegistration = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-white font-medium bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-300 ${isSubmitting ? 'opacity-75 cursor-not-allowed' : ''}`}
+                    className={`w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-white font-medium bg-gradient-to-r from-orange-600 to-orange-800 hover:from-orange-700 hover:to-orange-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all duration-300 ${isSubmitting ? 'opacity-75 cursor-not-allowed' : ''}`}
                   >
                     {isSubmitting ? (
                       <>
@@ -428,7 +425,7 @@ const TenantRegistration = () => {
 
                   <button
                     onClick={toggleForm}
-                    className="mt-4 w-full flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors duration-300"
+                    className="mt-4 w-full flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors duration-300"
                   >
                     {isLogin ? "Create your account" : "Sign in to your account"}
                   </button>
