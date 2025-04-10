@@ -7,11 +7,10 @@ const path = require('path');
 
 // Configure Cloudinary
 cloudinary.config({
-  cloud_name: 'dfilgwps9',
-  api_key: '461796494297831',
-  api_secret: '9tzOAIAPEH_o5-2BSOz9DD98oXE'
+  cloud_name: process.env.CLOUE_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET
 });
-
 
 const createRoom = asyncHandler(async (req, res) => {
   if (req.user.userType !== 'landlord') {
