@@ -1,6 +1,9 @@
 const Room = require('../models/Room');
 const asyncHandler = require('express-async-handler');
 const cloudinary = require('cloudinary').v2;
+const sharp = require('sharp');
+const fs = require('fs');
+const path = require('path');
 
 // Configure Cloudinary
 cloudinary.config({
@@ -9,75 +12,96 @@ cloudinary.config({
   api_secret: '9tzOAIAPEH_o5-2BSOz9DD98oXE'
 });
 
+
 const createRoom = asyncHandler(async (req, res) => {
   if (req.user.userType !== 'landlord') {
     res.status(403);
     throw new Error('Not authorized to add rooms');
   }
 
-  const {
-    accommodation,
-    roomType,
-    address,
-    rent,
-    cautionDeposit,
-    securityDepositType,
-    paymentPlan,
-    suitableFor,
-    restrictions,
-    description
-  } = req.body;
-
-  if (!accommodation || !roomType || !address || !rent ) {
+  if (!req.body.accommodation || !req.body.roomType || !req.body.address || !req.body.rent) {
     res.status(400);
     throw new Error('Please include all required fields');
   }
 
-  // Handle file uploads
-  let imageUrls = [];
-  if (req.files && req.files.photos) {
-    const files = Array.isArray(req.files.photos) ? req.files.photos : [req.files.photos];
-    
-    try {
-      // Upload each image to Cloudinary
-      for (const file of files) {
-        const result = await cloudinary.uploader.upload(file.tempFilePath, {
-          folder: 'room_images'
-        });
-        imageUrls.push(result.secure_url);
-      }
-    } catch (error) {
-      res.status(500);
-      throw new Error('Image upload failed');
-    }
+  if (!req.files || req.files.length === 0) {
+    res.status(400);
+    throw new Error('Please upload at least one image');
   }
 
-  // Create the room
-  const room = await Room.create({
-    accommodation,
-    roomType,
-    address,
-    rent,
-    cautionDeposit,
-    securityDepositType,
-    paymentPlan,
-    suitableFor,
-    restrictions,
-    description,
-    photos: imageUrls,
-    landlord: req.user.id,
-    isActive: true,
-    roomStatus: 'Active',
-  });
+  if (req.files.length > 5) {
+    res.status(400);
+    throw new Error('Maximum 5 images allowed');
+  }
 
-  res.status(201).json(room);
+  let imageUrls = [];
+  try {
+    for (const file of req.files) {
+      const compressedPath = path.join(__dirname, '../temp/uploads/', 'compressed-' + file.filename);
+    
+      try {
+        await sharp(file.path)
+          .resize({ width: 1200 })
+          .jpeg({ quality: 80 })
+          .toFile(compressedPath);
+    
+        const result = await cloudinary.uploader.upload(compressedPath, {
+          folder: 'room_images',
+          timeout: 30000,
+        });
+    
+        imageUrls.push(result.secure_url);
+        console.log('Uploaded:', result.secure_url);
+      } catch (uploadError) {
+        console.error('Cloudinary upload failed raw:', uploadError);
+        throw new Error('Cloudinary upload failed');
+      } finally {
+        try {
+          fs.unlinkSync(file.path);
+          fs.unlinkSync(compressedPath);
+        } catch (unlinkError) {
+          console.error('Temp file cleanup error:', unlinkError);
+        }
+      }
+    }
+    
+    const accommodation = JSON.parse(req.body.accommodation);
+    const roomType = JSON.parse(req.body.roomType);
+    const address = JSON.parse(req.body.address);
+    const suitableFor = JSON.parse(req.body.suitableFor || '[]');
+    const restrictions = JSON.parse(req.body.restrictions || '[]');
+
+    const room = await Room.create({
+      accommodation,
+      roomType,
+      address,
+      rent: req.body.rent,
+      cautionDeposit: req.body.cautionDeposit,
+      securityDepositType: req.body.securityDepositType,
+      paymentPlan: req.body.paymentPlan,
+      suitableFor,
+      restrictions,
+      description: req.body.description,
+      photos: imageUrls,
+      landlord: req.user.id,
+      isActive: true,
+      roomStatus: 'Active',
+    });
+
+    res.status(201).json(room);
+  } catch (error) {
+    console.error('Cloudinary upload failed:', error.message, error.name, error.http_code, error.stack);
+    res.status(500);
+    throw new Error('Failed to create room');
+  }
+
 });
 
 module.exports = {
   createRoom
 };
 
-const getLandlordRooms = async(req, res) => {
+const getLandlordRooms = async (req, res) => {
   try {
     if (req.user.userType !== "landlord") {
       return res.status(403).json({
@@ -201,7 +225,7 @@ const getAllRooms = async (req, res) => {
 const getRoomById = async (req, res) => {
   try {
     const room = await Room.findById(req.params.id);
-    
+
     if (!room) {
       return res.status(404).json({
         success: false,
