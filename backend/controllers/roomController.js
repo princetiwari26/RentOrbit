@@ -7,10 +7,17 @@ const path = require('path');
 
 // Configure Cloudinary
 cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.API_KEY,
-  api_secret: process.env.API_SECRET
+  cloud_name: 'dfilgwps9',
+  api_key: '461796494297831',
+  api_secret: '9tzOAIAPEH_o5-2BSOz9DD98oXE'
 });
+
+// cloudinary.config({
+//   cloud_name: process.env.CLOUD_NAME,
+//   api_key: process.env.API_KEY,
+//   api_secret: process.env.API_SECRET
+// });
+
 
 const createRoom = asyncHandler(async (req, res) => {
   if (req.user.userType !== 'landlord') {
@@ -95,10 +102,6 @@ const createRoom = asyncHandler(async (req, res) => {
   }
 
 });
-
-module.exports = {
-  createRoom
-};
 
 const getLandlordRooms = async (req, res) => {
   try {
@@ -246,9 +249,57 @@ const getRoomById = async (req, res) => {
   }
 };
 
+const updateRoomStatus = async (req, res) => {
+  const { roomId } = req.params;
+  const { isActive } = req.body;
+
+  if (req.user.userType !== 'landlord') {
+    return res.status(403).json({ message: 'Only landlords can update room status' });
+  }
+
+  try {
+    const room = await Room.findOne({ _id: roomId, landlord: req.user.id });
+
+    if (!room) {
+      return res.status(404).json({ message: 'Room not found or not authorized' });
+    }
+
+    room.isActive = isActive;
+    room.roomStatus = isActive ? 'Active' : 'Inactive';
+
+    await room.save();
+
+    res.status(200).json({ message: 'Room status updated', room });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating room status', error: error.message });
+  }
+};
+
+const deleteRoom = async (req, res) => {
+  const { roomId } = req.params;
+
+  if (req.user.userType !== 'landlord') {
+    return res.status(403).json({ message: 'Only landlords can delete rooms' });
+  }
+
+  try {
+    const room = await Room.findOneAndDelete({ _id: roomId, landlord: req.user.id });
+
+    if (!room) {
+      return res.status(404).json({ message: 'Room not found or not authorized' });
+    }
+
+    res.status(200).json({ message: 'Room deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting room', error: error.message });
+  }
+};
+
 module.exports = {
   createRoom,
   getLandlordRooms,
   getAllRooms,
   getRoomById,
+  updateRoomStatus,
+  deleteRoom,
 };
