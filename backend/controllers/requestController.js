@@ -33,6 +33,7 @@ const createRequest = async (req, res) => {
             room: roomId,
             visitDate,
             message,
+            newRequest: true
         });
 
         await newRequest.save();
@@ -115,6 +116,7 @@ const updateRequestStatus = asyncHandler(async (req, res) => {
         if (userType !== "landlord" || requestLandlordId !== userId) {
             return res.status(403).json({ message: "Unauthorized action for landlord." });
         }
+        request.newRequest = false
         request.status = "confirmed";
         await request.save();
 
@@ -138,6 +140,7 @@ const updateRequestStatus = asyncHandler(async (req, res) => {
         if (userType !== "landlord" || requestLandlordId !== userId) {
             return res.status(403).json({ message: "Unauthorized action for landlord." });
         }
+        request.newRequest = false
         request.status = "cancelled";
         await request.save();
 
