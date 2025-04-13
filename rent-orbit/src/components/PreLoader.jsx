@@ -11,7 +11,7 @@ const PreLoader = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-white">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-transparent">
       <div className="relative w-24 h-24 mb-8">
         {/* Main orb with gradient */}
         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-600 to-orange-600 shadow-lg animate-pulse"></div>
