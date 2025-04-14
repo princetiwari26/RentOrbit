@@ -7,6 +7,7 @@ const landlordRouter = require("./routes/landlordRoutes");
 const roomRouter = require("./routes/roomRoutes");
 const requestRoutes = require('./routes/requestRoutes');
 const notificationRouter = require("./routes/notificationRoute");
+const complainRouter = require("./routes/complaintRoutes");
 
 dotenv.config();
 connectDB();
@@ -19,6 +20,7 @@ app.use("/api/tenants", tenantRouter);
 app.use("/api/landlord", landlordRouter);
 app.use("/api/room", roomRouter);
 app.use('/api/requests', requestRoutes);
+app.use('/api/complaints', complainRouter);
 app.use('/api/notifications', notificationRouter);
 
 const PORT = process.env.PORT || 8000;

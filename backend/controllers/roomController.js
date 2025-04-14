@@ -114,19 +114,12 @@ const getLandlordRooms = async (req, res) => {
 
     const rooms = await Room.find({ landlord: req.user.id });
 
-    if (!rooms || rooms.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "No rooms found for this landlord.",
-        id: req.user.id,
-      });
-    }
-
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       count: rooms.length,
       data: rooms,
     });
+    
   } catch (error) {
     console.error("Error fetching rooms:", error);
     res.status(500).json({
@@ -135,6 +128,7 @@ const getLandlordRooms = async (req, res) => {
     });
   }
 }
+
 const getAllRooms = async (req, res) => {
   try {
     const {
@@ -295,6 +289,56 @@ const deleteRoom = async (req, res) => {
   }
 };
 
+const getOccupiedRoomById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  // Ensure only tenant can access
+  if (req.user.userType !== 'tenant') {
+    res.status(403);
+    throw new Error('Access denied. Only tenants can view this room.');
+  }
+
+  const room = await Room.findOne({ _id: id, roomStatus: 'Occupied' })
+    .populate('landlord', 'name email')
+    .populate('tenant', 'name email')
+    .lean();
+
+  if (!room) {
+    res.status(404);
+    throw new Error('Room not found or not occupied');
+  }
+
+  res.status(200).json(room);
+});
+
+const leaveRoom = asyncHandler(async (req, res) => {
+  const { id: tenantId, userType } = req.user;
+  const { roomId } = req.params;
+
+  if (userType !== 'tenant') {
+    return res.status(403).json({ message: 'Only tenants can perform this action' });
+  }
+
+  const room = await Room.findById(roomId);
+
+  if (!room) {
+    return res.status(404).json({ message: 'Room not found' });
+  }
+
+  if (!room.tenant || room.tenant.toString() !== tenantId) {
+    return res.status(403).json({ message: 'You are not assigned to this room' });
+  }
+
+  // Update room: remove tenant, joiningDate and set status to Active
+  room.tenant = null;
+  room.joiningDate = null;
+  room.roomStatus = 'Active';
+
+  await room.save();
+
+  res.status(200).json({ message: 'You have successfully left the room', room });
+});
+
 module.exports = {
   createRoom,
   getLandlordRooms,
@@ -302,4 +346,6 @@ module.exports = {
   getRoomById,
   updateRoomStatus,
   deleteRoom,
+  getOccupiedRoomById,
+  leaveRoom
 };

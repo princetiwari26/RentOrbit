@@ -175,6 +175,7 @@ const updateRequestStatus = asyncHandler(async (req, res) => {
         room.roomStatus = "Occupied";
         room.isActive = true;  // Ensure isActive stays true
         room.tenant = userId;
+        room.joiningDate = new Date();
         await room.save();
 
         request.status = "completed";
@@ -186,6 +187,16 @@ const updateRequestStatus = asyncHandler(async (req, res) => {
         });
 
         const notification = new Notification({
+            // tenant: userId,
+            // landlord: request.landlord,
+            // room: request.room,
+            // request: request._id,
+            // title: `Tenant confirmed the room`,
+            // message: `The tenant has confirmed the room and taken possession.`,
+            // notificationType: 'roomStatus',
+            // status: 'completed',
+            // isRead: false
+
             tenant: userId,
             landlord: request.landlord,
             room: request.room,
@@ -193,7 +204,7 @@ const updateRequestStatus = asyncHandler(async (req, res) => {
             title: `Tenant confirmed the room`,
             message: `The tenant has confirmed the room and taken possession.`,
             notificationType: 'roomStatus',
-            status: 'completed',
+            status: 'confirmed',
             isRead: false
         });
         await notification.save();
