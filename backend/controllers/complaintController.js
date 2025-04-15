@@ -134,3 +134,47 @@ exports.deleteLandlordComplaint = async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
+
+// ✅ Mark a Complaint as Read (Landlord only)
+exports.markComplaintAsRead = async (req, res) => {
+  try {
+    const { complaintId } = req.params;
+    const landlordId = req.user.id;
+
+    const complaint = await Complaint.findById(complaintId);
+    if (!complaint) return res.status(404).json({ message: 'Complaint not found' });
+
+    // Only landlord who owns the complaint can mark it read
+    if (complaint.landlord.toString() !== landlordId) {
+      return res.status(403).json({ message: 'Unauthorized action' });
+    }
+
+    // Update isRead only if it's false
+    if (!complaint.isRead) {
+      complaint.isRead = true;
+      await complaint.save();
+    }
+
+    res.status(200).json({ message: 'Marked as read', complaint });
+  } catch (error) {
+    console.error('Mark Read Error:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+exports.getUnreadComplaintCount = async (req, res) => {
+  try {
+    const landlordId = req.user.id;
+
+    const count = await Complaint.countDocuments({
+      landlord: landlordId,
+      isRead: false,
+      visible: true
+    });
+
+    res.status(200).json({ unreadCount: count });
+  } catch (error) {
+    console.error('Unread Count Error:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
