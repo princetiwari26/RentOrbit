@@ -33,7 +33,7 @@ const getLandlordNotifications = asyncHandler(async (req, res) => {
     }
 
     try {
-        const notifications = await Notification.find({ landlord: id, status: { $in: ['pending', 'tenant-cancelled'] } })
+        const notifications = await Notification.find({ landlord: id, status: { $in: ['pending', 'tenant-cancelled', 'confirmed', 'tenant-leave'] } })
             .sort({ createdAt: -1 })
             .populate("room", "accommodation roomType address rent")
             .populate("tenant", "name email phone");
@@ -53,7 +53,7 @@ const getTenantNotifications = asyncHandler(async (req, res) => {
     }
 
     try {
-        const notifications = await Notification.find({ tenant: id, status: { $in: ['confirmed', 'landlord-cancelled'] } })
+        const notifications = await Notification.find({ tenant: id, status: { $in: ['approve', 'landlord-cancelled', 'in-progress', 'resolved'] } })
             .sort({ createdAt: -1 })
             .populate("room", "accommodation roomType address rent")
             .populate("landlord", "name email phone");
