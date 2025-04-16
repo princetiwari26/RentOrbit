@@ -117,7 +117,7 @@ const updateRequestStatus = asyncHandler(async (req, res) => {
             return res.status(403).json({ message: "Unauthorized action for landlord." });
         }
         request.newRequest = false
-        request.status = "confirmed";
+        request.status = "approve";
         await request.save();
 
         const notification = new Notification({
@@ -128,7 +128,7 @@ const updateRequestStatus = asyncHandler(async (req, res) => {
             title: `Request approved by landlord`,
             message: `The landlord has approved your room request.`,
             notificationType: 'roomStatus',
-            status: 'confirmed',
+            status: 'approve',
             isRead: false
         });
         await notification.save();
@@ -187,16 +187,6 @@ const updateRequestStatus = asyncHandler(async (req, res) => {
         });
 
         const notification = new Notification({
-            // tenant: userId,
-            // landlord: request.landlord,
-            // room: request.room,
-            // request: request._id,
-            // title: `Tenant confirmed the room`,
-            // message: `The tenant has confirmed the room and taken possession.`,
-            // notificationType: 'roomStatus',
-            // status: 'completed',
-            // isRead: false
-
             tenant: userId,
             landlord: request.landlord,
             room: request.room,
@@ -222,7 +212,7 @@ const finalRoomRequestByTenant = async (req, res) => {
 
         const requests = await Request.find({
             tenant: tenantId,
-            status: "confirmed",
+            status: "approve",
             visitDate: { $gte: today, $lt: moment(today).endOf("day").toDate() }
         }).populate({
             path: "room",
@@ -245,5 +235,43 @@ const finalRoomRequestByTenant = async (req, res) => {
     }
 };
 
+const marksRoomRequestAsRead = async (req, res) => {
+    try {
+        const { roomRequestId} = req.params;
 
-module.exports = { createRequest, getRequests, updateRequestStatus, finalRoomRequestByTenant };
+        const roomRequest = await Request.findById(roomRequestId)
+        if (!roomRequest.isRead){
+            roomRequest.isRead = true;
+            await roomRequest.save();
+        }
+
+        res.status(200).json({ message: 'Marked as read', roomRequest})
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const getUnreadRoomRequestCount = async (req, res) => {
+  try {
+    const landlordId = req.user.id;
+
+    const count = await Request.countDocuments({
+      landlord: landlordId,
+      isRead: false,
+    });
+
+    res.status(200).json({ unreadCount: count });
+  } catch (error) {
+    console.error('Unread Count Error:', error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+module.exports = { 
+    createRequest,
+    getRequests,
+    updateRequestStatus,
+    finalRoomRequestByTenant,
+    marksRoomRequestAsRead,
+    getUnreadRoomRequestCount
+};

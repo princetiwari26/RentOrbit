@@ -25,13 +25,18 @@ const requestSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['pending', 'confirmed', 'rejected', 'visit-confirmed', 'completed', 'cancelled'],
+        enum: ['pending', 'confirmed', 'rejected', 'visit-confirmed', 'completed', 'cancelled', 'approve', 'tenant-leave'],
         default: 'pending'
     },
     
     newRequest: {
         type: Boolean,
         default: true
+    },
+
+    isRead: {
+        type: Boolean,
+        default: false
     },
 
     createdAt: {
