@@ -1,8 +1,8 @@
 const Complaint = require('../models/Complaint');
+const Notification = require('../models/Notification');
 const Room = require('../models/Room');
 
-// ✅ Tenant: Create Complaint (already implemented)
-exports.createComplaint = async (req, res) => {
+const createComplaint = async (req, res) => {
   try {
     const tenantId = req.user.id;
     const { roomId, type, description } = req.body;
@@ -23,8 +23,21 @@ exports.createComplaint = async (req, res) => {
       type,
       description
     });
-
     await complaint.save();
+
+    const notification = new Notification({
+      tenant: tenantId,
+      landlord: room.landlord._id,
+      room: room._id,
+      request: complaint._id,
+      title: type,
+      message: description,
+      notificationType: 'maintenance',
+      status: 'pending',
+      isRead: false
+    });
+    await notification.save();
+
     res.status(201).json({ message: 'Complaint submitted successfully', complaint });
   } catch (error) {
     console.error('Create Complaint Error:', error);
@@ -32,8 +45,7 @@ exports.createComplaint = async (req, res) => {
   }
 };
 
-// ✅ Tenant: Get All Their Complaints
-exports.getTenantComplaints = async (req, res) => {
+const getTenantComplaints = async (req, res) => {
   try {
     const tenantId = req.user.id;
 
@@ -48,8 +60,7 @@ exports.getTenantComplaints = async (req, res) => {
   }
 };
 
-// ✅ Landlord: Get All Complaints Related to Their Rooms
-exports.getLandlordComplaints = async (req, res) => {
+const getLandlordComplaints = async (req, res) => {
   try {
     const landlordId = req.user.id;
 
@@ -64,22 +75,60 @@ exports.getLandlordComplaints = async (req, res) => {
   }
 };
 
-// ✅ Update Complaint Status (used by tenant or landlord/admin)
-exports.updateComplaintStatus = async (req, res) => {
+const updateComplaintStatus = async (req, res) => {
   try {
     const { complaintId } = req.params;
     const { status } = req.body;
+    const userId = req.user.id;
+    const userType = req.user.userType;
 
     const allowedStatus = ['in-progress', 'resolved', 'rejected', 'cancelled'];
     if (!allowedStatus.includes(status)) {
       return res.status(400).json({ message: 'Invalid status' });
     }
 
-    const complaint = await Complaint.findById(complaintId);
+    const complaint = await Complaint.findById(complaintId).populate('room');
     if (!complaint) return res.status(404).json({ message: 'Complaint not found' });
 
     complaint.status = status;
     await complaint.save();
+
+    const type = complaint.type;
+
+    let title = '';
+    let message = '';
+
+    switch (status) {
+      case 'in-progress':
+        title = `${type} Complaint In Progress`;
+        message = `Your ${type.toLowerCase()} complaint is being looked into.`;
+        break;
+      case 'resolved':
+        title = `${type} Complaint Resolved`;
+        message = `Your ${type.toLowerCase()} complaint has been resolved.`;
+        break;
+      case 'rejected':
+        title = `${type} Complaint Rejected`;
+        message = `Your ${type.toLowerCase()} complaint was rejected.`;
+        break;
+      case 'cancelled':
+        title = `${type} Complaint Cancelled`;
+        message = `Your ${type.toLowerCase()} complaint was cancelled.`;
+        break;
+    }
+
+    const notification = new Notification({
+      tenant: complaint.tenant,
+      landlord: complaint.landlord,
+      room: complaint.room._id,
+      request: complaint._id,
+      title,
+      message,
+      notificationType: 'maintenance',
+      status: status === 'cancelled' && userType === 'tenant' ? 'tenant-cancel' : status,
+      isRead: false
+    });
+    await notification.save();
 
     res.status(200).json({ message: 'Complaint status updated', complaint });
   } catch (error) {
@@ -88,13 +137,12 @@ exports.updateComplaintStatus = async (req, res) => {
   }
 };
 
-// ✅ Tenant: Soft Delete Complaint
-exports.deleteTenantComplaint = async (req, res) => {
+const deleteTenantComplaint = async (req, res) => {
   try {
     const { complaintId } = req.params;
     const tenantId = req.user.id;
 
-    const complaint = await Complaint.findById(complaintId);
+    const complaint = await Complaint.findById(complaintId).populate('room');
     if (!complaint) return res.status(404).json({ message: 'Complaint not found' });
 
     if (complaint.tenant.toString() !== tenantId) {
@@ -102,7 +150,21 @@ exports.deleteTenantComplaint = async (req, res) => {
     }
 
     complaint.visible = false;
+    complaint.status = 'cancelled';
     await complaint.save();
+
+    const notification = new Notification({
+      tenant: tenantId,
+      landlord: complaint.landlord,
+      room: complaint.room._id,
+      request: complaint._id,
+      title: 'Complaint Cancelled by Tenant',
+      message: 'The tenant has cancelled the complaint.',
+      notificationType: 'maintenance',
+      status: 'tenant-cancel',
+      isRead: false
+    });
+    await notification.save();
 
     res.status(200).json({ message: 'Complaint deleted (hidden)' });
   } catch (error) {
@@ -111,13 +173,12 @@ exports.deleteTenantComplaint = async (req, res) => {
   }
 };
 
-// ✅ Landlord: Soft Delete Complaint (also set status = cancelled)
-exports.deleteLandlordComplaint = async (req, res) => {
+const deleteLandlordComplaint = async (req, res) => {
   try {
     const { complaintId } = req.params;
     const landlordId = req.user.id;
 
-    const complaint = await Complaint.findById(complaintId);
+    const complaint = await Complaint.findById(complaintId).populate('room');
     if (!complaint) return res.status(404).json({ message: 'Complaint not found' });
 
     if (complaint.landlord.toString() !== landlordId) {
@@ -128,6 +189,19 @@ exports.deleteLandlordComplaint = async (req, res) => {
     complaint.status = 'cancelled';
     await complaint.save();
 
+    const notification = new Notification({
+      tenant: complaint.tenant,
+      landlord: landlordId,
+      room: complaint.room._id,
+      request: complaint._id,
+      title: 'Complaint Cancelled by Landlord',
+      message: 'The landlord has cancelled the complaint.',
+      notificationType: 'maintenance',
+      status: 'cancelled',
+      isRead: false
+    });
+    await notification.save();
+
     res.status(200).json({ message: 'Complaint hidden and cancelled' });
   } catch (error) {
     console.error('Landlord Delete Error:', error);
@@ -135,8 +209,7 @@ exports.deleteLandlordComplaint = async (req, res) => {
   }
 };
 
-// ✅ Mark a Complaint as Read (Landlord only)
-exports.markComplaintAsRead = async (req, res) => {
+const markComplaintAsRead = async (req, res) => {
   try {
     const { complaintId } = req.params;
     const landlordId = req.user.id;
@@ -144,12 +217,10 @@ exports.markComplaintAsRead = async (req, res) => {
     const complaint = await Complaint.findById(complaintId);
     if (!complaint) return res.status(404).json({ message: 'Complaint not found' });
 
-    // Only landlord who owns the complaint can mark it read
     if (complaint.landlord.toString() !== landlordId) {
       return res.status(403).json({ message: 'Unauthorized action' });
     }
 
-    // Update isRead only if it's false
     if (!complaint.isRead) {
       complaint.isRead = true;
       await complaint.save();
@@ -162,7 +233,7 @@ exports.markComplaintAsRead = async (req, res) => {
   }
 };
 
-exports.getUnreadComplaintCount = async (req, res) => {
+const getUnreadComplaintCount = async (req, res) => {
   try {
     const landlordId = req.user.id;
 
@@ -178,3 +249,14 @@ exports.getUnreadComplaintCount = async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
+
+module.exports = {
+  createComplaint,
+  getTenantComplaints,
+  getLandlordComplaints,
+  updateComplaintStatus,
+  deleteTenantComplaint,
+  deleteLandlordComplaint,
+  markComplaintAsRead,
+  getUnreadComplaintCount
+}
