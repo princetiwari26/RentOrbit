@@ -61,20 +61,6 @@ const notificationSchema = new Schema({
             'warning'
         ]
     },
-    maintenanceType: {
-        type: String,
-        required: function () {
-            return this.notificationType === 'maintenance';
-        },
-        enum: [
-            'electricity',
-            'plumbing',
-            'internet',
-            'security',
-            'cleaning',
-            'other'
-        ]
-    },
     status: {
         type: String,
         required: function () {
@@ -88,7 +74,11 @@ const notificationSchema = new Schema({
             'landlord-cancelled',
             'cancelled',
             'inProgress',
-            'completed'
+            'completed',
+            'approve',
+            'tenant-leave',
+            'in-progress',
+            'resolved'
         ]
     },
 

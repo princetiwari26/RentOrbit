@@ -2,6 +2,10 @@ const bcrypt = require('bcryptjs');
 const asyncHandler = require('express-async-handler')
 const Landlord = require('../models/Landlord');
 const generateToken = require('../utils/generateToken')
+const Room = require('../models/Room');
+const Notification = require('../models/Notification');
+const Complaint = require('../models/Complaint');
+const Request = require('../models/Request');
 
 const registerLandlord = async (req, res) => {
     const { name, email, phone, address, password } = req.body;
@@ -60,8 +64,81 @@ const getLandlordProfile = asyncHandler(async (req, res) => {
     res.status(200).json(landlord);
 });
 
+const getLandlordDashboardStats = async (req, res) => {
+  try {
+    const landlordId = req.user.id;
+
+    if (req.user.userType !== 'landlord') {
+      return res.status(403).json({ message: 'Access denied. Only landlords can access this data.' });
+    }
+
+    const [
+      totalRooms,
+      activeRooms,
+      inactiveRooms,
+      occupiedRooms,
+      readNotifications,
+      unreadNotifications,
+      totalRequests,
+      roomRequests,
+      maintenanceRequests,
+      maintenancePending,
+      maintenanceInProgress,
+      maintenanceResolved,
+      maintenanceCancelled
+    ] = await Promise.all([
+      Room.countDocuments({ landlord: landlordId }),
+      Room.countDocuments({ landlord: landlordId, roomStatus: 'Active' }),
+      Room.countDocuments({ landlord: landlordId, roomStatus: 'Inactive' }),
+      Room.countDocuments({ landlord: landlordId, tenant: { $ne: null } }),
+
+      Notification.countDocuments({ landlord: landlordId, isRead: true }),
+      Notification.countDocuments({ landlord: landlordId, isRead: false }),
+
+      Request.countDocuments({ landlord: landlordId }),
+      Request.countDocuments({ landlord: landlordId, type: 'room' }),
+      Request.countDocuments({ landlord: landlordId, type: 'maintenance' }),
+
+      Complaint.countDocuments({ landlord: landlordId, status: 'pending' }),
+      Complaint.countDocuments({ landlord: landlordId, status: 'in-progress' }),
+      Complaint.countDocuments({ landlord: landlordId, status: 'resolved' }),
+      Complaint.countDocuments({ landlord: landlordId, status: 'cancelled' }),
+    ]);
+
+    res.status(200).json({
+      landlord: req.user.username,
+      rooms: {
+        total: totalRooms,
+        active: activeRooms,
+        inactive: inactiveRooms,
+        occupied: occupiedRooms
+      },
+      notifications: {
+        read: readNotifications,
+        unread: unreadNotifications
+      },
+      requests: {
+        total: totalRequests,
+        roomRequests: roomRequests,
+        maintenanceRequests: maintenanceRequests
+      },
+      complaints: {
+        total: maintenancePending + maintenanceInProgress + maintenanceResolved + maintenanceCancelled,
+        pending: maintenancePending,
+        inProgress: maintenanceInProgress,
+        resolved: maintenanceResolved,
+        cancelled: maintenanceCancelled
+      }
+    });
+  } catch (error) {
+    console.error('Dashboard error:', error);
+    res.status(500).json({ message: 'Server error fetching dashboard data' });
+  }
+};
+
 module.exports = {
     registerLandlord,
     loginLandlord,
     getLandlordProfile,
+    getLandlordDashboardStats
 }

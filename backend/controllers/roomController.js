@@ -1,4 +1,6 @@
 const Room = require('../models/Room');
+const Request = require('../models/Request')
+const Notification = require('../models/Notification')
 const asyncHandler = require('express-async-handler');
 const cloudinary = require('cloudinary').v2;
 const sharp = require('sharp');
@@ -305,7 +307,6 @@ const getOccupiedRoomById = asyncHandler(async (req, res) => {
 
   if (!room) {
     res.status(404);
-    throw new Error('Room not found or not occupied');
   }
 
   res.status(200).json(room);
@@ -329,6 +330,29 @@ const leaveRoom = asyncHandler(async (req, res) => {
     return res.status(403).json({ message: 'You are not assigned to this room' });
   }
 
+  // Find and delete the completed request
+  const request = await Request.findOneAndDelete({
+    tenant: tenantId,
+    room: roomId,
+    status: 'completed',
+  });
+
+  // Create notification if request was found and deleted
+  if (request) {
+    const notification = new Notification({
+      tenant: tenantId,
+      landlord: request.landlord,
+      room: roomId,
+      request: request._id,
+      title: `Tenant Left the Room`,
+      message: `The tenant has left the room.`,
+      notificationType: 'roomStatus',
+      status: 'tenant-leave',
+      isRead: false,
+    });
+    await notification.save();
+  }
+
   // Update room: remove tenant, joiningDate and set status to Active
   room.tenant = null;
   room.joiningDate = null;
@@ -338,6 +362,7 @@ const leaveRoom = asyncHandler(async (req, res) => {
 
   res.status(200).json({ message: 'You have successfully left the room', room });
 });
+
 
 module.exports = {
   createRoom,
