@@ -171,9 +171,12 @@ const updateRequestStatus = asyncHandler(async (req, res) => {
             return res.status(404).json({ message: "Room not found." });
         }
 
-        // Mark room as occupied
+        if (room.tenant) {
+            return res.status(400).json({ message: "Room is already occupied by another tenant." });
+        }
+
         room.roomStatus = "Occupied";
-        room.isActive = true;  // Ensure isActive stays true
+        room.isActive = true;
         room.tenant = userId;
         room.joiningDate = new Date();
         await room.save();
@@ -181,7 +184,6 @@ const updateRequestStatus = asyncHandler(async (req, res) => {
         request.status = "completed";
         await request.save();
 
-        // Add the room to tenant's occupied rooms
         await Tenant.findByIdAndUpdate(userId, {
             $push: { roomsOccupied: room._id }
         });
@@ -207,7 +209,7 @@ const updateRequestStatus = asyncHandler(async (req, res) => {
 
 const finalRoomRequestByTenant = async (req, res) => {
     try {
-        const tenantId = req.user.id; // Extract tenant ID from token middleware
+        const tenantId = req.user.id;
         const today = moment().startOf("day").toDate();
 
         const requests = await Request.find({
@@ -216,17 +218,19 @@ const finalRoomRequestByTenant = async (req, res) => {
             visitDate: { $gte: today, $lt: moment(today).endOf("day").toDate() }
         }).populate({
             path: "room",
-            populate: {
-                path: "landlord",
-                select: "name phone email"
-            }
+            populate: [
+                { path: "landlord", select: "name phone email" },
+                { path: "tenant", select: "_id" }
+            ]
         });
 
-        if (!requests || requests.length === 0) {
-            return res.status(404).json({ message: "No confirmed requests found for today." });
+        const availableRequests = requests.filter(request => !request.room?.tenant);
+
+        if (availableRequests.length === 0) {
+            return res.status(404).json({ message: "No confirmed available requests found for today." });
         }
 
-        res.json(requests);
+        res.json(availableRequests);
     } catch (error) {
         console.error("Error fetching requests:", error);
         if (!res.headersSent) {
@@ -237,37 +241,37 @@ const finalRoomRequestByTenant = async (req, res) => {
 
 const marksRoomRequestAsRead = async (req, res) => {
     try {
-        const { roomRequestId} = req.params;
+        const { roomRequestId } = req.params;
 
         const roomRequest = await Request.findById(roomRequestId)
-        if (!roomRequest.isRead){
+        if (!roomRequest.isRead) {
             roomRequest.isRead = true;
             await roomRequest.save();
         }
 
-        res.status(200).json({ message: 'Marked as read', roomRequest})
+        res.status(200).json({ message: 'Marked as read', roomRequest })
     } catch (error) {
         console.log(error);
     }
 }
 
 const getUnreadRoomRequestCount = async (req, res) => {
-  try {
-    const landlordId = req.user.id;
+    try {
+        const landlordId = req.user.id;
 
-    const count = await Request.countDocuments({
-      landlord: landlordId,
-      isRead: false,
-    });
+        const count = await Request.countDocuments({
+            landlord: landlordId,
+            isRead: false,
+        });
 
-    res.status(200).json({ unreadCount: count });
-  } catch (error) {
-    console.error('Unread Count Error:', error);
-    res.status(500).json({ message: 'Server Error' });
-  }
+        res.status(200).json({ unreadCount: count });
+    } catch (error) {
+        console.error('Unread Count Error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
 };
 
-module.exports = { 
+module.exports = {
     createRequest,
     getRequests,
     updateRequestStatus,
