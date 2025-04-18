@@ -2,11 +2,11 @@ import React from 'react';
 import { Search, Filter } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export const RequestFilters = ({ 
-  searchTerm, 
-  setSearchTerm, 
-  filters, 
-  setFilters 
+export const RequestFilters = ({
+  searchTerm,
+  setSearchTerm,
+  filters,
+  setFilters
 }) => {
   return (
     <motion.div

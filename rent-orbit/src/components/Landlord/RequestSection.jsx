@@ -1,15 +1,14 @@
 import React from 'react';
-import { DoorOpen, Wrench } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { RequestCard } from './RequestCard';
 
-export const RequestSection = ({ 
-  title, 
-  icon, 
-  color, 
-  requests, 
-  expandedRequest, 
-  setExpandedRequest, 
+export const RequestSection = ({
+  title,
+  icon,
+  color,
+  requests,
+  expandedRequest,
+  setExpandedRequest,
   handleStatusChange,
   isMaintenance,
   handleDeleteComplaint

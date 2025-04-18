@@ -1,4 +1,3 @@
-// components/Tenant/ComplaintForm.js
 import React, { useState } from 'react';
 import { AlertCircle, X, CheckCircle, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -48,7 +47,7 @@ const ComplaintForm = ({ roomId, onClose, onSubmit }) => {
 
     setIsSubmitting(true);
     setError(null);
-    
+
     try {
       await onSubmit({
         roomId,
@@ -57,7 +56,7 @@ const ComplaintForm = ({ roomId, onClose, onSubmit }) => {
       });
       setIsSuccess(true);
       showSuccessNotification('Complaint submitted successfully!');
-      
+
       // Reset form after successful submission
       setTimeout(() => {
         setIsSuccess(false);
@@ -83,12 +82,12 @@ const ComplaintForm = ({ roomId, onClose, onSubmit }) => {
   if (error && !isSubmitting) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <ErrorHandler 
-          error={error} 
+        <ErrorHandler
+          error={error}
           onRetry={() => {
             setError(null);
             setIsSubmitting(false);
-          }} 
+          }}
         />
       </div>
     );
@@ -106,7 +105,7 @@ const ComplaintForm = ({ roomId, onClose, onSubmit }) => {
         )}
       </AnimatePresence>
 
-      <motion.div 
+      <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
@@ -118,7 +117,7 @@ const ComplaintForm = ({ roomId, onClose, onSubmit }) => {
             <AlertCircle className="mr-2" size={20} />
             File a Complaint
           </h2>
-          <button 
+          <button
             onClick={onClose}
             className="text-white hover:text-gray-200 transition-colors"
             disabled={isSubmitting}
@@ -126,10 +125,10 @@ const ComplaintForm = ({ roomId, onClose, onSubmit }) => {
             <X size={24} />
           </button>
         </div>
-        
+
         <div className="p-6">
           {isSuccess ? (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-center py-8"
@@ -157,7 +156,7 @@ const ComplaintForm = ({ roomId, onClose, onSubmit }) => {
                   ))}
                 </select>
               </div>
-              
+
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Description <span className="text-red-500">*</span>
@@ -171,7 +170,7 @@ const ComplaintForm = ({ roomId, onClose, onSubmit }) => {
                   disabled={isSubmitting}
                 />
                 {error && (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="mt-2 flex items-center text-red-600 text-sm"
@@ -181,7 +180,7 @@ const ComplaintForm = ({ roomId, onClose, onSubmit }) => {
                   </motion.div>
                 )}
               </div>
-              
+
               <div className="flex justify-end space-x-3">
                 <button
                   type="button"

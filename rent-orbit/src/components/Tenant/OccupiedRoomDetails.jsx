@@ -1,13 +1,12 @@
-// components/Tenant/OccupiedRoomDetails.js
 import React, { useState } from 'react';
-import { 
-  X, 
-  Home, 
+import {
+  X,
+  Home,
   MapPin,
   IndianRupee,
-  Calendar, 
-  User, 
-  Phone, 
+  Calendar,
+  User,
+  Phone,
   Mail,
   AlertCircle,
   LogOut,
@@ -39,13 +38,13 @@ const OccupiedRoomDetails = ({ room, onClose, onLeaveRoom }) => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
-      
+
       setNotification({
         show: true,
         type: 'success',
         message: 'Successfully left the room!'
       });
-      
+
       setTimeout(() => {
         onLeaveRoom();
         onClose();
@@ -67,7 +66,7 @@ const OccupiedRoomDetails = ({ room, onClose, onLeaveRoom }) => {
   if (!room) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <ErrorHandler 
+        <ErrorHandler
           error={{ message: 'Room data not available' }}
           onRetry={onClose}
         />
@@ -83,12 +82,12 @@ const OccupiedRoomDetails = ({ room, onClose, onLeaveRoom }) => {
             <Notification
               type={notification.type}
               message={notification.message}
-              onClose={() => setNotification({...notification, show: false})}
+              onClose={() => setNotification({ ...notification, show: false })}
             />
           )}
         </AnimatePresence>
 
-        <motion.div 
+        <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
@@ -101,7 +100,7 @@ const OccupiedRoomDetails = ({ room, onClose, onLeaveRoom }) => {
               <Home className="mr-2" size={20} />
               Room Details
             </h2>
-            <button 
+            <button
               onClick={onClose}
               className="text-white hover:text-gray-200 transition-colors"
               disabled={isLeaving}
@@ -109,7 +108,7 @@ const OccupiedRoomDetails = ({ room, onClose, onLeaveRoom }) => {
               <X size={24} />
             </button>
           </div>
-          
+
           {/* Content */}
           <div className="p-6">
             {/* Room Images */}
@@ -118,16 +117,16 @@ const OccupiedRoomDetails = ({ room, onClose, onLeaveRoom }) => {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {room.photos.length > 0 ? (
                   room.photos.map((photo, index) => (
-                    <motion.div 
+                    <motion.div
                       key={index}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
                       className="rounded-xl overflow-hidden h-40 shadow-md hover:shadow-lg transition-shadow"
                     >
-                      <img 
-                        src={photo} 
-                        alt={`Room ${index + 1}`} 
+                      <img
+                        src={photo}
+                        alt={`Room ${index + 1}`}
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                         loading="lazy"
                       />
@@ -140,7 +139,7 @@ const OccupiedRoomDetails = ({ room, onClose, onLeaveRoom }) => {
                 )}
               </div>
             </div>
-            
+
             {/* Room Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               <motion.div
@@ -163,7 +162,7 @@ const OccupiedRoomDetails = ({ room, onClose, onLeaveRoom }) => {
                   ))}
                 </div>
               </motion.div>
-              
+
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -190,9 +189,9 @@ const OccupiedRoomDetails = ({ room, onClose, onLeaveRoom }) => {
                 </div>
               </motion.div>
             </div>
-            
+
             {/* Address */}
-            <motion.div 
+            <motion.div
               className="mb-8"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -216,9 +215,9 @@ const OccupiedRoomDetails = ({ room, onClose, onLeaveRoom }) => {
                 )}
               </div>
             </motion.div>
-            
+
             {/* Landlord Details */}
-            <motion.div 
+            <motion.div
               className="mb-8"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -231,7 +230,7 @@ const OccupiedRoomDetails = ({ room, onClose, onLeaveRoom }) => {
               <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
                 {room.landlord ? (
                   <div className="flex items-start space-x-4">
-                    <img 
+                    <img
                       src={room.landlord.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(room.landlord.name)}&background=random`}
                       alt="Landlord"
                       className="w-16 h-16 rounded-full object-cover border-2 border-white shadow"
@@ -253,10 +252,10 @@ const OccupiedRoomDetails = ({ room, onClose, onLeaveRoom }) => {
                 )}
               </div>
             </motion.div>
-            
+
             {/* Occupancy Details */}
             {room.joiningDate && (
-              <motion.div 
+              <motion.div
                 className="mb-8"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -281,9 +280,9 @@ const OccupiedRoomDetails = ({ room, onClose, onLeaveRoom }) => {
                 </div>
               </motion.div>
             )}
-            
+
             {/* Action Buttons */}
-            <motion.div 
+            <motion.div
               className="flex justify-end"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -306,7 +305,7 @@ const OccupiedRoomDetails = ({ room, onClose, onLeaveRoom }) => {
       <AnimatePresence>
         {showLeaveConfirmation && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
@@ -319,9 +318,9 @@ const OccupiedRoomDetails = ({ room, onClose, onLeaveRoom }) => {
                   <p className="text-gray-600 mt-1">Are you sure you want to leave this room? This action cannot be undone.</p>
                 </div>
               </div>
-              
+
               {leaveError && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   className="mb-4 flex items-center text-red-600 text-sm bg-red-50 p-2 rounded-lg"
@@ -330,7 +329,7 @@ const OccupiedRoomDetails = ({ room, onClose, onLeaveRoom }) => {
                   {leaveError}
                 </motion.div>
               )}
-              
+
               <div className="flex justify-end space-x-3">
                 <button
                   onClick={() => setShowLeaveConfirmation(false)}
