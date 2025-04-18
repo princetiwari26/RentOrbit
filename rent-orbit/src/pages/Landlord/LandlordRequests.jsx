@@ -11,6 +11,7 @@ import { StatsSummary } from '../../components/Landlord/StatsSummary';
 
 const LandlordRequests = () => {
   const [requests, setRequests] = useState([]);
+  const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [notification, setNotification] = useState({ message: '', type: '' });
@@ -24,16 +25,29 @@ const LandlordRequests = () => {
   const [expandedRequest, setExpandedRequest] = useState(null);
 
   useEffect(() => {
-    const fetchRequests = async () => {
+    const fetchData = async () => {
       try {
+        setLoading(true);
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:8000/api/requests', {
+
+        // Fetch room requests
+        const requestsResponse = await axios.get('http://localhost:8000/api/requests', {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`
           }
         });
-        setRequests(response.data);
+
+        // Fetch maintenance complaints
+        const complaintsResponse = await axios.get('http://localhost:8000/api/complaints/landlord', {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        setRequests(requestsResponse.data);
+        setComplaints(complaintsResponse.data.complaints);
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -41,15 +55,123 @@ const LandlordRequests = () => {
       }
     };
 
-    fetchRequests();
+    fetchData();
   }, []);
+
+  const markRequestAsRead = async (requestId, isMaintenance) => {
+    try {
+      const token = localStorage.getItem('token');
+      const endpoint = isMaintenance
+        ? `http://localhost:8000/api/complaints/${requestId}/mark-read`
+        : `http://localhost:8000/api/requests/${requestId}/mark-read`;
+
+      await axios.put(
+        endpoint,
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      // Update the request's read status in state if needed
+      if (isMaintenance) {
+        setComplaints(prevComplaints =>
+          prevComplaints.map(complaint =>
+            complaint._id === requestId ? { ...complaint, isRead: true } : complaint
+          )
+        );
+      } else {
+        setRequests(prevRequests =>
+          prevRequests.map(request =>
+            request._id === requestId ? { ...request, isRead: true } : request
+          )
+        );
+      }
+    } catch (err) {
+      console.error("Error marking request as read:", err);
+    }
+  };
+
+  const handleExpandRequest = (requestId, isMaintenance) => {
+    setExpandedRequest(expandedRequest === requestId ? null : requestId);
+
+    // Mark the request as read when expanded
+    if (expandedRequest !== requestId) {
+      markRequestAsRead(requestId, isMaintenance);
+    }
+  };
 
   const handleStatusChange = async (id, action) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put(
-        `http://localhost:8000/api/requests/${id}`,
-        { action },
+
+      if (action === 'approve' || action === 'landlord-cancel') {
+        // Handle room request status change
+        await axios.put(
+          `http://localhost:8000/api/requests/${id}`,
+          { action },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setRequests(prevRequests =>
+          prevRequests.map(request =>
+            request._id === id ? { ...request, status: action === 'approve' ? 'approved' : 'rejected' } : request
+          )
+        );
+
+        setNotification({
+          message: `Request ${action === 'approve' ? 'approved' : 'rejected'} successfully`,
+          type: 'success'
+        });
+      } else {
+        // Handle maintenance complaint status change
+        const status = action === 'in-progress' ? 'in-progress' : 'resolved';
+
+        await axios.put(
+          `http://localhost:8000/api/complaints/${id}/status`,
+          { status },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setComplaints(prevComplaints =>
+          prevComplaints.map(complaint =>
+            complaint._id === id ? { ...complaint, status } : complaint
+          )
+        );
+
+        setNotification({
+          message: `Complaint marked as ${status.replace('-', ' ')} successfully`,
+          type: 'success'
+        });
+      }
+    } catch (err) {
+      console.error("Error updating status:", err);
+      setNotification({
+        message: err.response?.data?.message || "Failed to update status",
+        type: 'error'
+      });
+    }
+  };
+
+  const handleDeleteComplaint = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      await axios.delete(
+        `http://localhost:8000/api/complaints/landlord/${id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -58,20 +180,18 @@ const LandlordRequests = () => {
         }
       );
 
-      setRequests(prevRequests =>
-        prevRequests.map(request =>
-          request._id === id ? { ...request, status: action === 'approve' ? 'approved' : action === 'in progress' ? 'in progress' : 'occupied' } : request
-        )
+      setComplaints(prevComplaints =>
+        prevComplaints.filter(complaint => complaint._id !== id)
       );
 
       setNotification({
-        message: `Request ${action === 'approve' ? 'approved' : action === 'landlord-cancel' ? 'rejected' : action === 'in progress' ? 'marked as in progress' : 'marked as occupied'} successfully`,
+        message: "Complaint deleted successfully",
         type: 'success'
       });
     } catch (err) {
-      console.error("Error updating request:", err);
+      console.error("Error deleting complaint:", err);
       setNotification({
-        message: err.response?.data?.message || "Failed to update request",
+        message: err.response?.data?.message || "Failed to delete complaint",
         type: 'error'
       });
     }
@@ -84,17 +204,36 @@ const LandlordRequests = () => {
 
     const matchesStatus = filters.status === 'All' ||
       (filters.status === 'pending' ? request.status === 'pending' :
-        filters.status === 'in progress' ? request.status === 'in progress' :
-          filters.status === 'occupied' ? request.status === 'occupied' : true);
+        filters.status === 'approved' ? request.status === 'approved' : true);
 
-    const matchesType = filters.type === 'All' ||
-      (request.type === 'maintenance' ? 'Maintenance' : 'Room') === filters.type;
+    const matchesType = filters.type === 'All' || filters.type === 'Room';
 
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  const roomRequests = filteredRequests.filter(request => request.type !== 'maintenance');
-  const maintenanceRequests = filteredRequests.filter(request => request.type === 'maintenance');
+  const filteredComplaints = complaints.filter(complaint => {
+    const matchesSearch = complaint.tenant?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (complaint.room?.address?.city?.toLowerCase().includes(searchTerm.toLowerCase()) || '') ||
+      (complaint.description?.toLowerCase().includes(searchTerm.toLowerCase()) || '');
+
+    const matchesStatus = filters.status === 'All' ||
+      (filters.status === 'pending' ? complaint.status === 'pending' :
+        filters.status === 'in progress' ? complaint.status === 'in-progress' :
+          filters.status === 'resolved' ? complaint.status === 'resolved' : true);
+
+    const matchesType = filters.type === 'All' || filters.type === 'Maintenance';
+
+    return matchesSearch && matchesStatus && matchesType;
+  });
+
+  const roomRequests = filteredRequests;
+  const maintenanceRequests = filteredComplaints.map(complaint => ({
+    ...complaint,
+    type: complaint.type || 'maintenance',
+    message: complaint.description,
+    createdAt: complaint.createdAt,
+    _id: complaint._id
+  }));
 
   if (loading) {
     return <PreLoader />;
@@ -143,7 +282,7 @@ const LandlordRequests = () => {
           setFilters={setFilters}
         />
 
-        <StatsSummary requests={requests} />
+        <StatsSummary requests={[...requests, ...maintenanceRequests]} />
 
         {/* Room Requests Section */}
         <RequestSection
@@ -152,10 +291,12 @@ const LandlordRequests = () => {
           color="bg-purple-100 text-purple-800"
           requests={roomRequests}
           expandedRequest={expandedRequest}
-          setExpandedRequest={setExpandedRequest}
+          setExpandedRequest={(id) => handleExpandRequest(id, false)}
           handleStatusChange={handleStatusChange}
+          handleDeleteRequest={null} // Explicitly pass null for room requests
           isMaintenance={false}
         />
+
 
         {/* Maintenance Requests Section */}
         <RequestSection
@@ -164,8 +305,9 @@ const LandlordRequests = () => {
           color="bg-orange-100 text-orange-800"
           requests={maintenanceRequests}
           expandedRequest={expandedRequest}
-          setExpandedRequest={setExpandedRequest}
+          setExpandedRequest={(id) => handleExpandRequest(id, true)}
           handleStatusChange={handleStatusChange}
+          handleDeleteComplaint={handleDeleteComplaint} // Pass the function for maintenance
           isMaintenance={true}
         />
       </div>
