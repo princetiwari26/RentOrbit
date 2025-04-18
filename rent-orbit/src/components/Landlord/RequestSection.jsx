@@ -11,7 +11,8 @@ export const RequestSection = ({
   expandedRequest, 
   setExpandedRequest, 
   handleStatusChange,
-  isMaintenance 
+  isMaintenance,
+  handleDeleteComplaint
 }) => {
   const sectionVariants = {
     hidden: { opacity: 0 },
@@ -48,6 +49,7 @@ export const RequestSection = ({
               setExpandedRequest={setExpandedRequest}
               handleStatusChange={handleStatusChange}
               isMaintenance={isMaintenance}
+              handleDeleteComplaint={handleDeleteComplaint}
             />
           ))}
         </div>
