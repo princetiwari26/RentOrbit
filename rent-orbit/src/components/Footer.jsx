@@ -36,7 +36,7 @@ function Footer() {
                             <Linkedin className="w-5 h-5" />
                         </a>
                         <a 
-                            href="mailto:princetiwari.profes@example.com" 
+                            href="mailto:princetiwari.profes@gmail.com" 
                             className="text-gray-500 hover:text-red-500 transition-colors"
                             aria-label="Email"
                         >
@@ -55,10 +55,6 @@ function Footer() {
                         <Heart className="w-4 h-4 mx-1 text-red-500 fill-red-500" />
                         <span>by Prince Tiwari</span>
                     </div>
-                </div>
-                
-                <div className="mt-4 text-xs text-gray-400">
-                    <p>RentOrbit is a fictional property rental platform created for demonstration purposes.</p>
                 </div>
             </div>
         </footer>
