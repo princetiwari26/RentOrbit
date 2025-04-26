@@ -248,7 +248,7 @@ const LandlordRequests = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-gray-50 p-4 md:p-6"
+      className="min-h-screen bg-gray-50 px-4 md:p-6"
     >
       {notification.message && (
         <Notification

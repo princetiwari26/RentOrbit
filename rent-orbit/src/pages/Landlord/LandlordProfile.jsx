@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  Home, 
-  MapPin, 
+import {
+  User,
+  Mail,
+  Phone,
+  Home,
+  MapPin,
   Briefcase,
   DollarSign,
   Calendar,
@@ -27,11 +27,6 @@ const LandlordProfile = () => {
   const [properties, setProperties] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showPropertyDetails, setShowPropertyDetails] = useState(false);
-  const [showTenantList, setShowTenantList] = useState(false);
-  const [selectedProperty, setSelectedProperty] = useState(null);
-  const [propertiesLoading, setPropertiesLoading] = useState(true);
-  const [propertiesError, setPropertiesError] = useState(null);
 
   const fetchLandlordProfile = async () => {
     try {
@@ -47,50 +42,19 @@ const LandlordProfile = () => {
     }
   };
 
-  const fetchProperties = async () => {
-    try {
-      setPropertiesLoading(true);
-      setPropertiesError(null);
-      
-      const response = await axios.get('http://localhost:8000/api/landlord/properties', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        }
-      });
-      
-      setProperties(response.data);
-    } catch (err) {
-      setPropertiesError(err);
-    } finally {
-      setPropertiesLoading(false);
-    }
-  };
-
   const fetchData = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       await Promise.all([
         fetchLandlordProfile(),
-        fetchProperties()
       ]);
     } catch (err) {
       setError(err);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleViewProperty = (property) => {
-    setSelectedProperty(property);
-    setShowPropertyDetails(true);
-  };
-
-  const handleViewTenants = (property) => {
-    setSelectedProperty(property);
-    setShowTenantList(true);
   };
 
   useEffect(() => {
@@ -116,19 +80,19 @@ const LandlordProfile = () => {
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8"
+      className="min-h-screen  px-4 md:p-4 lg:px-8"
     >
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Profile Header */}
-        <motion.div 
+        <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="bg-white shadow-xl rounded-lg overflow-hidden"
+          className="bg-white shadow-md shadow-purple-400 rounded-lg overflow-hidden"
         >
           <div className="h-16"></div>
           <div className="px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center -mt-16">
@@ -159,11 +123,11 @@ const LandlordProfile = () => {
             </div>
           </div>
         </motion.div>
-        
+
         {/* Profile Details */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Personal Information */}
-          <motion.div 
+          <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
@@ -181,7 +145,7 @@ const LandlordProfile = () => {
                   {landlord.address || 'Not specified'}
                 </p>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-500">Member Since</label>
                 <p className="text-gray-800 mt-1 flex items-center">
@@ -195,9 +159,9 @@ const LandlordProfile = () => {
               </div>
             </div>
           </motion.div>
-          
+
           {/* Stats */}
-          <motion.div 
+          <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.4 }}

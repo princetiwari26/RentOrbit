@@ -321,7 +321,7 @@ const LandLordAddRoom = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-2 relative">
+    <div className="min-h-screen bg-gray-50 px-2 relative">
       {/* Overlay with PreLoader when uploading */}
       {uploading && (
         <div className="fixed inset-0 bg-black bg-opacity-10 z-50 flex items-center justify-center">

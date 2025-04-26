@@ -220,26 +220,6 @@ const RoomDetails = ({ room, onBack, onDelete }) => {
 
   const isOccupied = room.roomStatus === 'Occupied';
 
-  const renderAmenityIcon = (amenity) => {
-    const icons = {
-      'Fully Furnished': <Home className="h-5 w-5" />,
-      'Semi-Furnished': <Home className="h-5 w-5" />,
-      'Unfurnished': <Home className="h-5 w-5" />,
-      'Wi-Fi': <Wifi className="h-5 w-5" />,
-      'AC': <Snowflake className="h-5 w-5" />,
-      'Geyser': <Droplets className="h-5 w-5" />,
-      'Parking': <Car className="h-5 w-5" />,
-      'Power Backup': <BatteryCharging className="h-5 w-5" />,
-      'Security': <Shield className="h-5 w-5" />,
-      'Gym': <Dumbbell className="h-5 w-5" />,
-      'Garden': <Sprout className="h-5 w-5" />,
-      'Wardrobe': <Shirt className="h-5 w-5" />,
-      'TV': <Tv className="h-5 w-5" />,
-      'Washing Machine': <WashingMachine className="h-5 w-5" />
-    };
-    return icons[amenity] || <Home className="h-5 w-5" />;
-  };
-
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transform transition-all duration-300">
       {/* Notification */}
@@ -252,7 +232,7 @@ const RoomDetails = ({ room, onBack, onDelete }) => {
       )}
 
       {/* Header with back button */}
-      <div className="border-b border-gray-200 p-4 flex items-center bg-gradient-to-r from-blue-50 to-white">
+      <div className="border-b border-gray-200 px-4 flex items-center bg-gradient-to-r from-purple-100 to-white">
         <button
           onClick={onBack}
           className="mr-3 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
@@ -480,7 +460,7 @@ const RoomDetails = ({ room, onBack, onDelete }) => {
             <div className="flex justify-end space-x-3">
               <button
                 onClick={() => setShowStatusConfirm(false)}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border text-slate-800 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
@@ -506,7 +486,7 @@ const RoomDetails = ({ room, onBack, onDelete }) => {
             <div className="flex justify-end space-x-3">
               <button
                 onClick={cancelDelete}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border text-slate-800 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
@@ -553,8 +533,12 @@ const LandlordRoomList = () => {
         });
         if (response.data.success) {
           setRooms(response.data.data);
+          if (response.data.data.length === 0) {
+            // No rooms found, but this is not an error
+            setError(null);
+          }
         } else {
-          setError('Failed to fetch rooms');
+          setError(response.data.message || 'Failed to fetch rooms');
         }
       } catch (err) {
         setError(err.message);
@@ -604,7 +588,8 @@ const LandlordRoomList = () => {
     return <PreLoader />;
   }
 
-  if (error) {
+  // Only show error handler if there's an actual error (not just empty data)
+  if (error && !(rooms.length === 0 && !error)) {
     return <ErrorHandler error={error} />;
   }
 
@@ -619,22 +604,12 @@ const LandlordRoomList = () => {
       )}
 
       {view === 'list' ? (
-        <div className="max-w-full mx-auto">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">My Rooms ({rooms.length})</h1>
-          </div>
+        <div className="max-w-6xl mx-auto px-4 md:p-6">
 
           {rooms.length === 0 ? (
             <div className="text-center py-10 bg-white rounded-lg border border-gray-200">
               <Home className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-              <p className="text-gray-500 mb-4">You haven't listed any rooms yet</p>
-              <button 
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center mx-auto"
-                onClick={() => {}} // Add your navigation to add new room
-              >
-                <Plus className="h-5 w-5 mr-1" />
-                Add Your First Room
-              </button>
+              <p className="text-gray-500 mb-4">No rooms available</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4">

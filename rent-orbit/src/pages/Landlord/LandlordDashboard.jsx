@@ -70,23 +70,12 @@ const LandlordDashboard = () => {
 
   return (
     <motion.div
-      className="min-h-screen bg-gray-50 p-4 md:p-8"
+      className="min-h-screen bg-gray-50 px-4 md:p-8"
       initial="hidden"
       animate="visible"
       variants={fadeIn}
     >
-      {/* Header */}
-      <motion.div className="flex justify-between items-center mb-8" variants={fadeIn}>
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Landlord Dashboard</h1>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          onClick={fetchDashboardData}
-          className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-100 transition text-green-700 font-semibold"
-        >
-          <RefreshCw size={18} />
-          <span>Refresh</span>
-        </motion.button>
-      </motion.div>
+      
 
       {/* Stats Grid */}
       <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -96,7 +85,6 @@ const LandlordDashboard = () => {
             icon: <Home size={20} />,
             iconBg: 'bg-blue-100 text-blue-600',
             stats: [
-              { label: 'Total', value: dashboardData.rooms.total, color: 'text-gray-800' },
               { label: 'Active', value: dashboardData.rooms.active, color: 'text-green-600' },
               { label: 'Occupied', value: dashboardData.rooms.occupied, color: 'text-orange-600' },
             ],
@@ -115,7 +103,7 @@ const LandlordDashboard = () => {
             icon: <Wrench size={20} />,
             iconBg: 'bg-green-100 text-green-600',
             stats: [
-              { label: 'Total', value: dashboardData.requests.total, color: 'text-gray-800' },
+              { label: 'Room', value: dashboardData.requests.roomRequests, color: 'text-green-600' },
               { label: 'Maintenance', value: dashboardData.requests.maintenanceRequests, color: 'text-blue-600' },
             ],
           },
@@ -131,7 +119,7 @@ const LandlordDashboard = () => {
         ].map((card, i) => (
           <motion.div
             key={card.title}
-            className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow"
+            className="bg-white p-4 shadow-sm rounded-xl border-b-4 border-purple-600 hover:shadow-lg transition-shadow"
             custom={i}
             variants={fadeIn}
           >
@@ -154,7 +142,7 @@ const LandlordDashboard = () => {
       {/* Charts and Actions */}
       <motion.div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Complaint Chart */}
-        <motion.div className="bg-white p-6 rounded-xl shadow-md" variants={fadeIn}>
+        <motion.div className="bg-white p-6 rounded-xl shadow-md shadow-purple-300" variants={fadeIn}>
           <h3 className="text-lg font-semibold text-gray-700 mb-4">Complaints Status</h3>
           <div className="h-64">
             <div className="grid grid-cols-4 gap-2 text-center mb-4">
@@ -185,7 +173,7 @@ const LandlordDashboard = () => {
         </motion.div>
 
         {/* Quick Actions */}
-        <motion.div className="bg-white p-6 rounded-xl shadow-md" variants={fadeIn}>
+        <motion.div className="bg-white p-6 rounded-xl shadow-md shadow-purple-300" variants={fadeIn}>
           <h3 className="text-lg font-semibold text-gray-700 mb-4">Quick Actions</h3>
           <div className="grid grid-cols-2 gap-4">
             {[

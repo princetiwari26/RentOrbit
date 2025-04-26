@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
-  Bell,
   BellRing,
   Check,
-  CheckCircle2,
   Info,
   DoorOpen,
   X,
@@ -204,23 +202,6 @@ function LandlordNotifications() {
     }
   };
 
-  const markAllAsRead = async () => {
-    try {
-      await axios.put('http://localhost:8000/api/notifications/mark-all-read', {}, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-      setUnreadCount(0);
-      setNotification({ message: 'All notifications marked as read', type: 'success' });
-    } catch (err) {
-      console.error('Error marking all notifications as read:', err);
-      setNotification({ message: 'Failed to mark all as read', type: 'error' });
-    }
-  };
-
   const handleNotificationClick = async (notification) => {
     setSelectedNotification(notification);
     setShowModal(true);
@@ -291,7 +272,7 @@ function LandlordNotifications() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-6">
+    <div className="max-w-6xl mx-auto px-4 md:p-6">
       {notification.message && (
         <Notification
           type={notification.type}
@@ -299,33 +280,6 @@ function LandlordNotifications() {
           onClose={() => setNotification({ message: '', type: '' })}
         />
       )}
-
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-        <div className="flex items-center">
-          <Bell className="w-6 h-6 mr-2 text-indigo-600" />
-          <h1 className="text-2xl font-bold">Notifications</h1>
-          {unreadCount > 0 && (
-            <motion.span
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 500 }}
-              className="ml-3 px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded-full"
-            >
-              {unreadCount} unread
-            </motion.span>
-          )}
-        </div>
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={markAllAsRead}
-          className="flex items-center text-sm text-indigo-600 hover:text-indigo-800"
-        >
-          <CheckCircle2 className="w-4 h-4 mr-1" />
-          Mark all as read
-        </motion.button>
-      </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Filters Sidebar - Desktop */}
@@ -498,8 +452,7 @@ function LandlordNotifications() {
               className="bg-white rounded-lg shadow p-8 text-center"
             >
               <Info className="w-10 h-10 mx-auto mb-4 text-gray-400" />
-              <h3 className="text-lg font-medium text-gray-900 mb-1">No notifications found</h3>
-              <p className="text-gray-500">Try adjusting your filters to see more notifications</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-1">No Notifications found</h3>
             </motion.div>
           ) : (
             <div className="bg-white rounded-lg shadow overflow-hidden">
