@@ -345,7 +345,7 @@ function LandlordNotifications() {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setShowMobileFilters(!showMobileFilters)}
-            className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg shadow"
+            className="flex items-center px-4 py-2 bg-gray-100 text-slate-800 rounded-lg shadow"
           >
             <Filter className="w-4 h-4 mr-2" />
             Filters
