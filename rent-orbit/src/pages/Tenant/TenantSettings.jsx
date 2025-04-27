@@ -147,15 +147,7 @@ function TenantSettings() {
         </motion.div>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <motion.div 
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="flex items-center mb-8"
-        >
-          <Settings className="text-2xl text-orange-600 mr-3" />
-          <h1 className="text-3xl font-bold text-gray-900">Tenant Settings</h1>
-        </motion.div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
 
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar Navigation */}

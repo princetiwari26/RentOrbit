@@ -218,7 +218,7 @@ function TenantNotifications() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-6">
+    <div className="max-w-6xl mx-auto px-4 md:p-6">
       {notification.message && (
         <Notification
           type={notification.type}
@@ -226,26 +226,6 @@ function TenantNotifications() {
           onClose={() => setNotification({ message: '', type: '' })}
         />
       )}
-
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-        <div className="flex items-center">
-          <Bell className="w-6 h-6 mr-2 text-indigo-600" />
-          <h1 className="text-2xl font-bold">Notifications</h1>
-          {unreadCount > 0 && (
-            <span className="ml-3 px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded-full">
-              {unreadCount} unread
-            </span>
-          )}
-        </div>
-        <button
-          onClick={markAllAsRead}
-          className="flex items-center text-sm text-indigo-600 hover:text-indigo-800"
-        >
-          <CheckCircle2 className="w-4 h-4 mr-1" />
-          Mark all as read
-        </button>
-      </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Filters Sidebar */}
