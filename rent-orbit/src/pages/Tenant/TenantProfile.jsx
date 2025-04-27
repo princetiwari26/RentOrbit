@@ -157,15 +157,15 @@ const TenantProfile = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8"
+      className="min-h-screen  px-4 md:p-4 lg:px-8"
     >
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Profile Header */}
         <motion.div 
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="bg-white shadow-xl rounded-lg overflow-hidden"
+          className="bg-white shadow-md shadow-orange-400 rounded-lg overflow-hidden"
         >
           <div className="h-16"></div>
           <div className="px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center -mt-16">
@@ -359,7 +359,7 @@ const TenantProfile = () => {
               <div className="flex justify-end space-x-3">
                 <button 
                   onClick={() => setShowDetails(true)}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  className="px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-800 text-white rounded-lg hover:from-orange-800 hover:to-orange-600 transition"
                 >
                   View Complete Details
                 </button>

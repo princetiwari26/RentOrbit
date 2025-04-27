@@ -298,7 +298,7 @@ const TenantDashboard = () => {
   const totalPages = Math.ceil(filteredProperties.length / propertiesPerPage);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+    <div className="min-h-screen bg-gray-50 px-4 md:p-8">
       {/* Always visible search section */}
       <SearchSection
         searchQuery={searchQuery}
@@ -434,7 +434,7 @@ const SearchSection = ({ searchQuery, setSearchQuery, setShowFilters, clearFilte
       <input
         type="text"
         placeholder="Enter your location to search for properties..."
-        className="block w-full pl-10 pr-12 py-3 border border-gray-200 rounded-lg bg-gray-50 focus:ring-2 focus:ring-green-500 focus:border-green-500"
+        className="block w-full pl-10 pr-12 py-3 border border-gray-200 rounded-lg bg-gray-50 focus:ring-2 focus:ring-orange-300 focus:border-orange-500 outline-none"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         autoFocus
@@ -445,9 +445,9 @@ const SearchSection = ({ searchQuery, setSearchQuery, setShowFilters, clearFilte
           <button
             type="button"
             onClick={() => setShowFilters(true)}
-            className="p-1 text-gray-500 hover:text-green-600 transition-colors"
+            className="p-1 text-gray-500 transition-colors bg-gray-50 mt-1 ml-2"
           >
-            <Filter className="h-5 w-5" />
+            <Filter className="h-5 w-5 " />
           </button>
         </div>
         <button
