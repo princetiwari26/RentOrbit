@@ -6,13 +6,9 @@
 
 ## 📸 Preview
 
-> ⚠️ Add screenshots or a video demo to showcase your app. Example:
-
 ![Homepage](./screenshots/homepage.png)
 ![Tenant Dashboard](./screenshots/tenant-dashboard.png)
 ![Landlord Dashboard](./screenshots/landlord-dashboard.png)
-
-[🎥 Watch Demo Video](https://your-demo-link.com)
 
 ---
 
