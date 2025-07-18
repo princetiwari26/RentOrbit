@@ -6,9 +6,9 @@
 
 ## 📸 Preview
 
-![Homepage](./screenshots/homepage.png)
-![Tenant Dashboard](./screenshots/tenant-dashboard.png)
-![Landlord Dashboard](./screenshots/landlord-dashboard.png)
+![Homepage]([https://i.postimg.cc/rsMbfsLB/Rent-Orbit-Google-Chrome-18-07-2025-14-01-57.png))
+![Tenant Dashboard]([./screenshots/tenant-dashboard.png](https://i.postimg.cc/q7QCNZv2/Tenant-Dashboard.png))
+![Landlord Dashboard]([./screenshots/landlord-dashboard.png](https://i.postimg.cc/q7BxDKtX/Land-Lord-Dashboard.png))
 
 ---
 
